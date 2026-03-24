@@ -1,0 +1,52 @@
+version: "3.9"
+
+services:
+  api-gateway:
+    build:
+      context: .
+      dockerfile: src/Api.Gateway/Dockerfile
+    ports:
+      - "5001:5001"
+    environment:
+      - LLM_API_KEY=${LLM_API_KEY}
+      - LLM_BASE_URL=${LLM_BASE_URL}
+      - LLM_MODEL_NAME=${LLM_MODEL_NAME}
+      - ZEP_API_KEY=${ZEP_API_KEY}
+      - KUZU_DB_PATH=/data/kuzu
+      - ORLEANS_CLUSTER_ID=swarmfish
+      - ORLEANS_SERVICE_ID=swarmfish-dev
+    volumes:
+      - kuzu-data:/data/kuzu
+    depends_on:
+      ingestion:
+        condition: service_healthy
+
+  ingestion:
+    build:
+      context: src/Pipeline.Ingestion
+      dockerfile: Dockerfile
+    ports:
+      - "8001:8001"
+    environment:
+      - LLM_API_KEY=${LLM_API_KEY}
+      - LLM_BASE_URL=${LLM_BASE_URL}
+      - LLM_MODEL_NAME=${LLM_MODEL_NAME}
+      - API_URL=http://api-gateway:5001
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 10s
+      retries: 5
+
+  frontend:
+    build:
+      context: src/Frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:5001
+    depends_on:
+      - api-gateway
+
+volumes:
+  kuzu-data:

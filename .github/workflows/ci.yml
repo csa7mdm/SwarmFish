@@ -1,0 +1,67 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  dotnet:
+    name: .NET Build + Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+      - run: dotnet restore SwarmFish.sln
+      - run: dotnet build SwarmFish.sln --no-restore -c Release
+      - run: dotnet test SwarmFish.sln --no-build -c Release --logger trx
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results-dotnet
+          path: "**/*.trx"
+
+  python:
+    name: Python Ingestion Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install uv
+      - working-directory: src/Pipeline.Ingestion
+        run: uv sync && uv run pytest --tb=short
+
+  frontend:
+    name: Frontend Build + Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v3
+        with:
+          version: 9
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+          cache-dependency-path: src/Frontend/pnpm-lock.yaml
+      - working-directory: src/Frontend
+        run: pnpm install --frozen-lockfile
+      - working-directory: src/Frontend
+        run: pnpm build
+      - working-directory: src/Frontend
+        run: pnpm test -- --watchAll=false
+
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+      - run: dotnet format SwarmFish.sln --verify-no-changes

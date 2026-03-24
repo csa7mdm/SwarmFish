@@ -1,0 +1,42 @@
+# .NET
+bin/
+obj/
+*.user
+.vs/
+*.suo
+*.ncrunch*
+TestResults/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.uv/
+*.egg-info/
+dist/
+.pytest_cache/
+
+# Node
+node_modules/
+.next/
+.pnpm-store/
+*.pnpm-lock.yaml
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Data
+data/
+*.db
+*.kz
+
+# IDE
+.idea/
+.vscode/settings.json
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
