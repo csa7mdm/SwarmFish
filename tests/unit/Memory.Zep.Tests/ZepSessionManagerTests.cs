@@ -1,3 +1,4 @@
+using Xunit;
 using NSubstitute;
 
 namespace SwarmFish.Memory.Zep.Tests;

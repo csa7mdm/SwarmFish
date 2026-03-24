@@ -67,15 +67,23 @@ public sealed class ZepRateLimiter : IAsyncDisposable
             try
             {
                 // Wait for a lease in the overflow drain loop
-                using var retryLease = await _limiter.AcquireAsync(1, ct).ConfigureAwait(false);
-                if (!retryLease.IsAcquired)
+                RateLimitLease? retryLease = null;
+                while (true)
                 {
-                    tcs.SetException(new InvalidOperationException("Rate limiter lease could not be acquired."));
-                    return;
+                    retryLease = await _limiter.AcquireAsync(1, ct).ConfigureAwait(false);
+                    if (retryLease.IsAcquired)
+                    {
+                        break;
+                    }
+                    retryLease.Dispose();
+                    await Task.Delay(10, ct).ConfigureAwait(false);
                 }
 
-                var result = await func().ConfigureAwait(false);
-                tcs.SetResult(result);
+                using (retryLease)
+                {
+                    var result = await func().ConfigureAwait(false);
+                    tcs.SetResult(result);
+                }
             }
             catch (Exception ex)
             {
