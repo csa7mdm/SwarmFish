@@ -1,7 +1,10 @@
 using System.Net.Http.Json;
 using Microsoft.AspNetCore.Mvc.Testing;
 using SwarmFish.Core.Contracts.Models;
+using SwarmFish.Core.Contracts.Interfaces;
 using Xunit;
+using System.Threading.Tasks;
+using System;
 
 namespace SwarmFish.Api.Gateway.Tests;
 
@@ -22,10 +25,11 @@ public class ApiGatewayTests : IClassFixture<WebApplicationFactory<Program>>
 
         // Act
         var response = await client.PostAsJsonAsync("/api/simulations", new SimulationConfig(
-            "What is the future of AI?", 
+            Guid.NewGuid(), 
             50, 
             10, 
-            SimulationMode.Social
+            "What is the future of AI?",
+            SimulationMode.Standard
         ));
 
         // Assert

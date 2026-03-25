@@ -13,6 +13,7 @@ using SwarmFish.Simulation.Engine.Interfaces;
 using SwarmFish.Simulation.Engine.Services;
 using Microsoft.SemanticKernel;
 using System.Threading.RateLimiting;
+using Microsoft.AspNetCore.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,7 +30,7 @@ builder.Services.Configure<ZepMemoryOptions>(builder.Configuration.GetSection("Z
 // --- KuzuDB Registration ---
 // Assuming KuzuDB path comes from env or config
 var kuzuDbPath = Environment.GetEnvironmentVariable("KUZU_DB_PATH") ?? "data/kuzudb";
-builder.Services.AddSingleton(new KuzuConnectionPool(kuzuDbPath, 10)); // Max 10 connections
+builder.Services.AddSingleton(sp => new KuzuConnectionPool(kuzuDbPath, sp.GetRequiredService<ILogger<KuzuConnectionPool>>(), 10)); // Max 10 connections
 builder.Services.AddSingleton<IGraphStore, KuzuGraphStore>();
 
 // --- Zep Memory Registration ---
@@ -195,3 +196,5 @@ app.MapHub<SimulationHub>("/hubs/simulation");
 app.Run();
 
 public record BulkImportRequest(IEnumerable<GraphNode> Nodes, IEnumerable<GraphEdge> Edges);
+
+public partial class Program { }

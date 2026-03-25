@@ -5,6 +5,7 @@ using SwarmFish.Agents.Orleans.Grains;
 using SwarmFish.Agents.Orleans.Models;
 using SwarmFish.Core.Contracts.Interfaces;
 using SwarmFish.Core.Contracts.Models;
+using Orleans.Runtime;
 using Xunit;
 
 namespace SwarmFish.Agents.Orleans.Tests;
@@ -15,6 +16,7 @@ namespace SwarmFish.Agents.Orleans.Tests;
 /// </summary>
 public class AgentGrainTests
 {
+    private readonly Mock<IPersistentState<AgentGrainState>> _stateMock;
     private readonly Mock<IMemoryStore> _memoryStoreMock;
     private readonly Mock<IGraphStore> _graphStoreMock;
     private readonly Mock<ILogger<AgentGrain>> _loggerMock;
@@ -22,6 +24,7 @@ public class AgentGrainTests
 
     public AgentGrainTests()
     {
+        _stateMock = new Mock<IPersistentState<AgentGrainState>>();
         _memoryStoreMock = new Mock<IMemoryStore>();
         _graphStoreMock = new Mock<IGraphStore>();
         _loggerMock = new Mock<ILogger<AgentGrain>>();
@@ -59,8 +62,10 @@ public class AgentGrainTests
         var persona = CreateTestPersona();
         var simulationId = Guid.NewGuid();
         var state = new AgentGrainState();
+        _stateMock.SetupGet(s => s.State).Returns(state);
+
         var grain = new TestableAgentGrain(
-            state, _memoryStoreMock.Object, _graphStoreMock.Object, _kernel, _loggerMock.Object);
+            _stateMock.Object, _memoryStoreMock.Object, _graphStoreMock.Object, _kernel, _loggerMock.Object);
 
         // Act
         await grain.InitialiseAsync(persona, simulationId);
@@ -89,8 +94,10 @@ public class AgentGrainTests
             Status = AgentStatus.Suppressed,
             TicksProcessed = 0
         };
+        _stateMock.SetupGet(s => s.State).Returns(state);
+
         var grain = new TestableAgentGrain(
-            state, _memoryStoreMock.Object, _graphStoreMock.Object, _kernel, _loggerMock.Object);
+            _stateMock.Object, _memoryStoreMock.Object, _graphStoreMock.Object, _kernel, _loggerMock.Object);
 
         // Act
         var result = await grain.ProcessTickAsync(CreateTestTick());
@@ -104,8 +111,10 @@ public class AgentGrainTests
     {
         // Arrange
         var state = new AgentGrainState(); // No persona set
+        _stateMock.SetupGet(s => s.State).Returns(state);
+
         var grain = new TestableAgentGrain(
-            state, _memoryStoreMock.Object, _graphStoreMock.Object, _kernel, _loggerMock.Object);
+            _stateMock.Object, _memoryStoreMock.Object, _graphStoreMock.Object, _kernel, _loggerMock.Object);
 
         // Act & Assert
         await Assert.ThrowsAsync<InvalidOperationException>(
@@ -136,8 +145,10 @@ public class AgentGrainTests
             .Setup(g => g.GetNeighboursAsync(agentId.ToString(), 2, It.IsAny<CancellationToken>()))
             .ReturnsAsync(new List<GraphNode>());
 
+        _stateMock.SetupGet(s => s.State).Returns(state);
+
         var grain = new TestableAgentGrain(
-            state, _memoryStoreMock.Object, _graphStoreMock.Object, _kernel, _loggerMock.Object,
+            _stateMock.Object, _memoryStoreMock.Object, _graphStoreMock.Object, _kernel, _loggerMock.Object,
             agentId);
 
         // Act — LLM call will fail (no provider configured), AgentGrain handles gracefully
@@ -183,8 +194,10 @@ public class AgentGrainTests
             .Setup(g => g.GetNeighboursAsync(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new List<GraphNode>());
 
+        _stateMock.SetupGet(s => s.State).Returns(state);
+
         var grain = new TestableAgentGrain(
-            state, _memoryStoreMock.Object, _graphStoreMock.Object, _kernel, _loggerMock.Object,
+            _stateMock.Object, _memoryStoreMock.Object, _graphStoreMock.Object, _kernel, _loggerMock.Object,
             agentId);
 
         // Act
@@ -199,8 +212,10 @@ public class AgentGrainTests
     {
         // Arrange
         var state = new AgentGrainState { Status = AgentStatus.Active };
+        _stateMock.SetupGet(s => s.State).Returns(state);
+
         var grain = new TestableAgentGrain(
-            state, _memoryStoreMock.Object, _graphStoreMock.Object, _kernel, _loggerMock.Object);
+            _stateMock.Object, _memoryStoreMock.Object, _graphStoreMock.Object, _kernel, _loggerMock.Object);
 
         // Act
         await grain.SuppressAsync();
@@ -214,8 +229,10 @@ public class AgentGrainTests
     {
         // Arrange
         var state = new AgentGrainState { Status = AgentStatus.Suppressed };
+        _stateMock.SetupGet(s => s.State).Returns(state);
+
         var grain = new TestableAgentGrain(
-            state, _memoryStoreMock.Object, _graphStoreMock.Object, _kernel, _loggerMock.Object);
+            _stateMock.Object, _memoryStoreMock.Object, _graphStoreMock.Object, _kernel, _loggerMock.Object);
 
         // Act
         await grain.ReactivateAsync();
@@ -230,8 +247,10 @@ public class AgentGrainTests
         // Arrange
         var persona = CreateTestPersona();
         var state = new AgentGrainState { Persona = persona };
+        _stateMock.SetupGet(s => s.State).Returns(state);
+
         var grain = new TestableAgentGrain(
-            state, _memoryStoreMock.Object, _graphStoreMock.Object, _kernel, _loggerMock.Object);
+            _stateMock.Object, _memoryStoreMock.Object, _graphStoreMock.Object, _kernel, _loggerMock.Object);
 
         // Act
         var result = await grain.GetPersonaAsync();
@@ -245,8 +264,10 @@ public class AgentGrainTests
     {
         // Arrange
         var state = new AgentGrainState();
+        _stateMock.SetupGet(s => s.State).Returns(state);
+
         var grain = new TestableAgentGrain(
-            state, _memoryStoreMock.Object, _graphStoreMock.Object, _kernel, _loggerMock.Object);
+            _stateMock.Object, _memoryStoreMock.Object, _graphStoreMock.Object, _kernel, _loggerMock.Object);
 
         // Act
         var result = await grain.GetPersonaAsync();

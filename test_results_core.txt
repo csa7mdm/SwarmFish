@@ -1,0 +1,12 @@
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Core.Contracts -> D:\swarmfish\src\Core.Contracts\bin\Release\net9.0\Core.Contracts.dll
+  Core.Domain -> D:\swarmfish\src\Core.Domain\bin\Release\net9.0\Core.Domain.dll
+  Core.Domain.Tests -> D:\swarmfish\tests\unit\Core.Domain.Tests\bin\Release\net9.0\Core.Domain.Tests.dll
+Test run for D:\swarmfish\tests\unit\Core.Domain.Tests\bin\Release\net9.0\Core.Domain.Tests.dll (.NETCoreApp,Version=v9.0)
+VSTest version 18.0.1 (x64)
+
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:    66, Skipped:     0, Total:    66, Duration: 383 ms - Core.Domain.Tests.dll (net9.0)

@@ -1,0 +1,7 @@
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Core.Contracts -> D:\swarmfish\src\Core.Contracts\bin\Release\net9.0\Core.Contracts.dll
+D:\swarmfish\src\Memory.Zep\ZepClientWrapper.cs(28,15): error CS0101: The namespace 'SwarmFish.Memory.Zep' already contains a definition for 'ZepSearchResult' [D:\swarmfish\src\Memory.Zep\Memory.Zep.csproj]
+D:\swarmfish\src\Memory.Zep\ZepClientWrapper.cs(28,30): error CS8863: Only a single partial type declaration may have a parameter list [D:\swarmfish\src\Memory.Zep\Memory.Zep.csproj]
+D:\swarmfish\src\Memory.Zep\ZepClientWrapper.cs(9,33): error CS0738: 'ZepClientWrapper' does not implement interface member 'IZepClientWrapper.SearchMemoryAsync(string, string, int, CancellationToken)'. 'ZepClientWrapper.SearchMemoryAsync(string, string, int, CancellationToken)' cannot implement 'IZepClientWrapper.SearchMemoryAsync(string, string, int, CancellationToken)' because it does not have the matching return type of 'Task<IReadOnlyList<ZepSearchResult>>'. [D:\swarmfish\src\Memory.Zep\Memory.Zep.csproj]
+D:\swarmfish\src\Memory.Zep\ZepClientWrapper.cs(9,33): error CS0738: 'ZepClientWrapper' does not implement interface member 'IZepClientWrapper.GetMemoryAsync(string, CancellationToken)'. 'ZepClientWrapper.GetMemoryAsync(string, CancellationToken)' cannot implement 'IZepClientWrapper.GetMemoryAsync(string, CancellationToken)' because it does not have the matching return type of 'Task<IReadOnlyList<ZepMemoryMessage>>'. [D:\swarmfish\src\Memory.Zep\Memory.Zep.csproj]

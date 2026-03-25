@@ -1,0 +1,5 @@
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Core.Contracts -> D:\swarmfish\src\Core.Contracts\bin\Release\net9.0\Core.Contracts.dll
+  Agents.Orleans -> D:\swarmfish\src\Agents.Orleans\bin\Release\net9.0\Agents.Orleans.dll
+D:\swarmfish\src\Simulation.Engine\Services\SimulationOrchestrator.cs(170,58): error CS7036: There is no argument given that corresponds to the required parameter 'ct' of 'IAgentBatchCoordinator.ProcessBatchAsync(IReadOnlyList<Guid>, SimulationTick, CancellationToken)' [D:\swarmfish\src\Simulation.Engine\Simulation.Engine.csproj]

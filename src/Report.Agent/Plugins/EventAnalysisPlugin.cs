@@ -21,7 +21,7 @@ public class EventAnalysisPlugin
     public string GetEventFrequency(
         [Description("The type of event to count")] string eventType)
     {
-        var count = _events.Count(e => e.Events.Any(ev => ev.Type.Equals(eventType, StringComparison.OrdinalIgnoreCase)));
+        var count = _events.Count(e => e.PreviousEvents.Any(ev => ev.EventType.Equals(eventType, StringComparison.OrdinalIgnoreCase)));
         return $"Event '{eventType}' occurred {count} times.";
     }
 
@@ -31,7 +31,7 @@ public class EventAnalysisPlugin
         [Description("Number of top agents to return")] int count)
     {
         var topAgents = _events
-            .SelectMany(e => e.Events)
+            .SelectMany(e => e.PreviousEvents)
             .GroupBy(ev => ev.AgentId)
             .OrderByDescending(g => g.Count())
             .Take(count)

@@ -25,15 +25,13 @@ public sealed class KuzuConnectionPool : IAsyncDisposable, IDisposable
     /// <summary>
     /// Initialises a new connection pool with the specified number of connections.
     /// </summary>
-    /// <param name="dbPath">Filesystem path for the KuzuDB database directory.</param>
+    /// <param name="dbPath">The path to the KuzuDB database directory.</param>
     /// <param name="logger">Logger instance for diagnostic output.</param>
-    /// <param name="poolSize">Number of connections to maintain (default 8).</param>
-    /// <exception cref="ArgumentOutOfRangeException">Thrown if poolSize is less than 1.</exception>
-    /// <exception cref="InvalidOperationException">Thrown if database initialisation fails.</exception>
-    public KuzuConnectionPool(string dbPath, ILogger logger, int poolSize = 8)
+    /// <param name="poolSize">Maximum number of active connections to maintain.</param>
+    public KuzuConnectionPool(string dbPath, ILogger<KuzuConnectionPool> logger, int poolSize = 8)
     {
         if (poolSize < 1) throw new ArgumentOutOfRangeException(nameof(poolSize), "Pool size must be at least 1.");
-
+        
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _poolSize = poolSize;
         _allConnections = new List<KuzuConnection>(poolSize);

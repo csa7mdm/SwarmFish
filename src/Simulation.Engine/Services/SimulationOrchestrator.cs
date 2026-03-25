@@ -167,7 +167,7 @@ public class SimulationOrchestrator : ISimulationOrchestrator, IDisposable
 
                 var tick = new SimulationTick(round, DateTimeOffset.UtcNow, previousEvents, context);
                 
-                var batchEvents = await batchCoordinator.ProcessBatchAsync(activeAgentIds, tick);
+                var batchEvents = await batchCoordinator.ProcessBatchAsync(activeAgentIds, tick, ct);
                 previousEvents = batchEvents;
 
                 await _herdBiasCorrector.ApplyHerdBiasCorrectionAsync(batchEvents, ct);

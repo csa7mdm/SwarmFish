@@ -4,6 +4,9 @@ using SwarmFish.Core.Contracts.Interfaces;
 using SwarmFish.Report.Agent.Models;
 using SwarmFish.Report.Agent.Plugins;
 using Xunit;
+using System.Threading.Tasks;
+using System;
+using System.Collections.Generic;
 
 namespace SwarmFish.Report.Agent.Tests;
 
@@ -42,7 +45,7 @@ public class ReportAgentServiceTests
         // Arrange
         var events = new List<SwarmFish.Core.Contracts.Models.SimulationTick>
         {
-            new(1, new[] { new SwarmFish.Core.Contracts.Models.SimulationEvent(Guid.NewGuid(), "TestEvent", "Content", DateTimeOffset.Now) })
+            new(1, DateTimeOffset.UtcNow, new[] { new SwarmFish.Core.Contracts.Models.AgentEvent(Guid.NewGuid(), "TestEvent", "Content", DateTimeOffset.Now) }, new SwarmFish.Core.Contracts.Models.SimulationContext(Guid.NewGuid(), "Query", SwarmFish.Core.Contracts.Interfaces.SimulationMode.Standard))
         };
         var plugin = new EventAnalysisPlugin(events);
 

@@ -1,0 +1,20 @@
+  Determining projects to restore...
+D:\swarmfish\src\Api.Gateway\Api.Gateway.csproj : error NU1102: Unable to find package Microsoft.AspNetCore.SignalR with version (>= 9.0.0) [D:\swarmfish\SwarmFish.sln]
+D:\swarmfish\src\Api.Gateway\Api.Gateway.csproj : error NU1102:   - Found 18 version(s) in nuget.org [ Nearest version: 1.2.9 ] [D:\swarmfish\SwarmFish.sln]
+D:\swarmfish\src\Api.Gateway\Api.Gateway.csproj : error NU1102:   - Found 0 version(s) in Microsoft Visual Studio Offline Packages [D:\swarmfish\SwarmFish.sln]
+D:\swarmfish\src\Api.Gateway\Api.Gateway.csproj : error NU1102:   - Found 0 version(s) in C:\Program Files\dotnet\library-packs [D:\swarmfish\SwarmFish.sln]
+D:\swarmfish\src\Api.Gateway\Api.Gateway.csproj : error NU1102: Unable to find package Microsoft.AspNetCore.RateLimiting with version (>= 9.0.0) [D:\swarmfish\SwarmFish.sln]
+D:\swarmfish\src\Api.Gateway\Api.Gateway.csproj : error NU1102:   - Found 6 version(s) in nuget.org [ Nearest version: 7.0.0-rc.2.22476.2 ] [D:\swarmfish\SwarmFish.sln]
+D:\swarmfish\src\Api.Gateway\Api.Gateway.csproj : error NU1102:   - Found 0 version(s) in Microsoft Visual Studio Offline Packages [D:\swarmfish\SwarmFish.sln]
+D:\swarmfish\src\Api.Gateway\Api.Gateway.csproj : error NU1102:   - Found 0 version(s) in C:\Program Files\dotnet\library-packs [D:\swarmfish\SwarmFish.sln]
+D:\swarmfish\tests\integration\Api.Gateway.Tests\Api.Gateway.Tests.csproj : error NU1102: Unable to find package Microsoft.AspNetCore.SignalR with version (>= 9.0.0) [D:\swarmfish\SwarmFish.sln]
+D:\swarmfish\tests\integration\Api.Gateway.Tests\Api.Gateway.Tests.csproj : error NU1102:   - Found 18 version(s) in nuget.org [ Nearest version: 1.2.9 ] [D:\swarmfish\SwarmFish.sln]
+D:\swarmfish\tests\integration\Api.Gateway.Tests\Api.Gateway.Tests.csproj : error NU1102:   - Found 0 version(s) in Microsoft Visual Studio Offline Packages [D:\swarmfish\SwarmFish.sln]
+D:\swarmfish\tests\integration\Api.Gateway.Tests\Api.Gateway.Tests.csproj : error NU1102:   - Found 0 version(s) in C:\Program Files\dotnet\library-packs [D:\swarmfish\SwarmFish.sln]
+D:\swarmfish\tests\integration\Api.Gateway.Tests\Api.Gateway.Tests.csproj : error NU1102: Unable to find package Microsoft.AspNetCore.RateLimiting with version (>= 9.0.0) [D:\swarmfish\SwarmFish.sln]
+D:\swarmfish\tests\integration\Api.Gateway.Tests\Api.Gateway.Tests.csproj : error NU1102:   - Found 6 version(s) in nuget.org [ Nearest version: 7.0.0-rc.2.22476.2 ] [D:\swarmfish\SwarmFish.sln]
+D:\swarmfish\tests\integration\Api.Gateway.Tests\Api.Gateway.Tests.csproj : error NU1102:   - Found 0 version(s) in Microsoft Visual Studio Offline Packages [D:\swarmfish\SwarmFish.sln]
+D:\swarmfish\tests\integration\Api.Gateway.Tests\Api.Gateway.Tests.csproj : error NU1102:   - Found 0 version(s) in C:\Program Files\dotnet\library-packs [D:\swarmfish\SwarmFish.sln]
+  Failed to restore D:\swarmfish\tests\integration\Api.Gateway.Tests\Api.Gateway.Tests.csproj (in 811 ms).
+  Failed to restore D:\swarmfish\src\Api.Gateway\Api.Gateway.csproj (in 811 ms).
+  13 of 15 projects are up-to-date for restore.

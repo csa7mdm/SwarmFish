@@ -21,7 +21,7 @@ public sealed class KuzuMigrationRunner
     /// Path to the directory containing <c>*.cypher</c> migration scripts.
     /// If null, defaults to the <c>Migrations</c> subdirectory next to this assembly.
     /// </param>
-    public KuzuMigrationRunner(KuzuConnectionPool pool, ILogger logger, string? migrationsDirectory = null)
+    public KuzuMigrationRunner(KuzuConnectionPool pool, ILogger<KuzuMigrationRunner> logger, string? migrationsDirectory = null)
     {
         _pool = pool ?? throw new ArgumentNullException(nameof(pool));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));

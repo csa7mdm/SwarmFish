@@ -35,7 +35,7 @@ public class OrchestratorTests
         
         var batchCoordinatorMock = new Mock<IAgentBatchCoordinator>();
         batchCoordinatorMock
-            .Setup(c => c.ProcessBatchAsync(It.IsAny<IReadOnlyList<Guid>>(), It.IsAny<SimulationTick>()))
+            .Setup(c => c.ProcessBatchAsync(It.IsAny<IReadOnlyList<Guid>>(), It.IsAny<SimulationTick>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new List<AgentEvent>());
 
         _grainFactoryMock
@@ -63,7 +63,7 @@ public class OrchestratorTests
         Assert.Contains(progressList, p => p.State == SimulationState.Running && p.CurrentRound == 1);
         Assert.Contains(progressList, p => p.State == SimulationState.Completed);
 
-        batchCoordinatorMock.Verify(c => c.ProcessBatchAsync(It.IsAny<IReadOnlyList<Guid>>(), It.IsAny<SimulationTick>()), Times.Once);
+        batchCoordinatorMock.Verify(c => c.ProcessBatchAsync(It.IsAny<IReadOnlyList<Guid>>(), It.IsAny<SimulationTick>(), It.IsAny<CancellationToken>()), Times.Once);
         _herdBiasMock.Verify(h => h.ApplyHerdBiasCorrectionAsync(It.IsAny<IReadOnlyList<AgentEvent>>(), It.IsAny<CancellationToken>()), Times.Once);
     }
     
@@ -75,7 +75,7 @@ public class OrchestratorTests
         
         var batchCoordinatorMock = new Mock<IAgentBatchCoordinator>();
         batchCoordinatorMock
-            .Setup(c => c.ProcessBatchAsync(It.IsAny<IReadOnlyList<Guid>>(), It.IsAny<SimulationTick>()))
+            .Setup(c => c.ProcessBatchAsync(It.IsAny<IReadOnlyList<Guid>>(), It.IsAny<SimulationTick>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new List<AgentEvent>());
 
         _grainFactoryMock

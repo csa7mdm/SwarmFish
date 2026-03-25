@@ -26,7 +26,7 @@ public sealed class KuzuGraphStore : IGraphStore
     /// <param name="pool">The connection pool to use for database access.</param>
     /// <param name="logger">Logger instance for diagnostic output.</param>
     /// <param name="cache">Memory cache for hot read-path caching.</param>
-    public KuzuGraphStore(KuzuConnectionPool pool, ILogger logger, IMemoryCache cache)
+    public KuzuGraphStore(KuzuConnectionPool pool, ILogger<KuzuGraphStore> logger, IMemoryCache cache)
     {
         _pool = pool ?? throw new ArgumentNullException(nameof(pool));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));

@@ -2,6 +2,7 @@ using System.Reflection;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
+using Orleans.Runtime;
 using SwarmFish.Agents.Orleans.Models;
 using SwarmFish.Core.Contracts.Interfaces;
 using SwarmFish.Core.Contracts.Models;
@@ -13,31 +14,37 @@ namespace SwarmFish.Agents.Orleans.Grains;
 /// Manages persona state, processes simulation ticks via Semantic Kernel,
 /// and interacts with memory and graph stores.
 /// </summary>
-public class AgentGrain : Grain<AgentGrainState>, IAgentGrain
+public class AgentGrain : Grain, IAgentGrain
 {
+    private readonly IPersistentState<AgentGrainState> _state;
     private readonly IMemoryStore _memoryStore;
     private readonly IGraphStore _graphStore;
     private readonly Kernel _kernel;
     private readonly ILogger<AgentGrain> _logger;
     private readonly string _promptTemplate;
 
+    private AgentGrainState State => _state.State;
+
     /// <summary>
     /// Initialises a new instance of the <see cref="AgentGrain"/> class.
     /// </summary>
+    /// <param name="state">The persistent state facet.</param>
     /// <param name="memoryStore">The agent memory store.</param>
     /// <param name="graphStore">The knowledge graph store.</param>
     /// <param name="kernel">The Semantic Kernel instance for LLM calls.</param>
     /// <param name="logger">Logger for structured logging.</param>
     public AgentGrain(
+        [PersistentState("agent")] IPersistentState<AgentGrainState> state,
         IMemoryStore memoryStore,
         IGraphStore graphStore,
         Kernel kernel,
         ILogger<AgentGrain> logger)
     {
-        _memoryStore = memoryStore;
-        _graphStore = graphStore;
-        _kernel = kernel;
-        _logger = logger;
+        _state = state ?? throw new ArgumentNullException(nameof(state));
+        _memoryStore = memoryStore ?? throw new ArgumentNullException(nameof(memoryStore));
+        _graphStore = graphStore ?? throw new ArgumentNullException(nameof(graphStore));
+        _kernel = kernel ?? throw new ArgumentNullException(nameof(kernel));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _promptTemplate = LoadPromptTemplate();
     }
 
@@ -48,7 +55,7 @@ public class AgentGrain : Grain<AgentGrainState>, IAgentGrain
         State.SimulationId = simulationId;
         State.Status = AgentStatus.Active;
         State.TicksProcessed = 0;
-        await WriteStateAsync();
+        await _state.WriteStateAsync();
 
         // Seed initial memory with persona facts
         var seedEntry = new MemoryEntry(
@@ -60,23 +67,23 @@ public class AgentGrain : Grain<AgentGrainState>, IAgentGrain
 
         _logger.LogInformation(
             "Agent {AgentId} initialised with persona {PersonaName} for simulation {SimulationId}",
-            this.GetPrimaryKey(), persona.Name, simulationId);
+            persona.Id, persona.Name, simulationId);
     }
 
     /// <inheritdoc />
     public async Task<AgentEvent> ProcessTickAsync(SimulationTick tick)
     {
-        var agentId = this.GetPrimaryKey();
+        if (State.Persona is null)
+        {
+            throw new InvalidOperationException("Agent has not been initialised.");
+        }
+
+        var agentId = State.Persona.Id;
 
         if (State.Status == AgentStatus.Suppressed)
         {
             _logger.LogDebug("Agent {AgentId} is suppressed, returning silent event", agentId);
             return new AgentEvent(agentId, "silent", "{}", DateTimeOffset.UtcNow);
-        }
-
-        if (State.Persona is null)
-        {
-            throw new InvalidOperationException($"Agent {agentId} has not been initialised.");
         }
 
         // 1. Retrieve relevant memories (top-5 semantic search)
@@ -121,7 +128,7 @@ public class AgentGrain : Grain<AgentGrainState>, IAgentGrain
 
         // 7. Update state
         State.TicksProcessed++;
-        await WriteStateAsync();
+        await _state.WriteStateAsync();
 
         _logger.LogDebug(
             "Agent {AgentId} processed tick {Round}, event type: {EventType}",
@@ -140,16 +147,16 @@ public class AgentGrain : Grain<AgentGrainState>, IAgentGrain
     public async Task SuppressAsync()
     {
         State.Status = AgentStatus.Suppressed;
-        await WriteStateAsync();
-        _logger.LogInformation("Agent {AgentId} suppressed", this.GetPrimaryKey());
+        await _state.WriteStateAsync();
+        _logger.LogInformation("Agent {AgentId} suppressed", State.Persona?.Id);
     }
 
     /// <inheritdoc />
     public async Task ReactivateAsync()
     {
         State.Status = AgentStatus.Active;
-        await WriteStateAsync();
-        _logger.LogInformation("Agent {AgentId} reactivated", this.GetPrimaryKey());
+        await _state.WriteStateAsync();
+        _logger.LogInformation("Agent {AgentId} reactivated", State.Persona?.Id);
     }
 
     private string BuildPrompt(

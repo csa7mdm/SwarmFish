@@ -8,21 +8,23 @@ namespace SwarmFish.Memory.Zep;
 /// </summary>
 public class ZepClientWrapper : IZepClientWrapper
 {
-    public Task AddMemoryAsync(string sessionId, string role, string name, string content, CancellationToken ct) 
+    /// <inheritdoc />
+    public Task AddMemoryAsync(string sessionId, string role, string roleType, string content, CancellationToken ct = default) 
         => Task.CompletedTask;
 
-    public Task AddSessionAsync(string sessionId, CancellationToken ct) 
+    /// <inheritdoc />
+    public Task AddSessionAsync(string sessionId, CancellationToken ct = default) 
         => Task.CompletedTask;
 
-    public Task DeleteSessionAsync(string sessionId, CancellationToken ct) 
+    /// <inheritdoc />
+    public Task DeleteSessionAsync(string sessionId, CancellationToken ct = default) 
         => Task.CompletedTask;
 
-    public Task<IEnumerable<ZepMessage>> GetMemoryAsync(string sessionId, CancellationToken ct) 
-        => Task.FromResult(Enumerable.Empty<ZepMessage>());
+    /// <inheritdoc />
+    public Task<IReadOnlyList<ZepMemoryMessage>> GetMemoryAsync(string sessionId, CancellationToken ct = default) 
+        => Task.FromResult<IReadOnlyList<ZepMemoryMessage>>(Array.Empty<ZepMemoryMessage>());
 
-    public Task<IEnumerable<ZepSearchResult>> SearchMemoryAsync(string sessionId, string query, int topK, CancellationToken ct) 
-        => Task.FromResult(Enumerable.Empty<ZepSearchResult>());
+    /// <inheritdoc />
+    public Task<IReadOnlyList<ZepSearchResult>> SearchMemoryAsync(string sessionId, string query, int topK, CancellationToken ct = default) 
+        => Task.FromResult<IReadOnlyList<ZepSearchResult>>(Array.Empty<ZepSearchResult>());
 }
-
-public record ZepMessage(string Content, DateTimeOffset CreatedAt);
-public record ZepSearchResult(string Content, DateTimeOffset CreatedAt, float Score);

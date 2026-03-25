@@ -15,12 +15,13 @@ public class KuzuGraphStoreTests : IDisposable
 
     public KuzuGraphStoreTests()
     {
-        _dbPath = Path.Combine(Path.GetTempPath(), $"kuzu_test_{Guid.NewGuid():N}");
+        _dbPath = Path.Combine(Path.GetTempPath(), "SwarmFishTests", Guid.NewGuid().ToString());
         Directory.CreateDirectory(_dbPath);
 
-        _pool = new KuzuConnectionPool(_dbPath, NullLogger.Instance, poolSize: 2);
+        _pool = new KuzuConnectionPool(_dbPath, new Mock<ILogger<KuzuConnectionPool>>().Object, poolSize: 2);
         _cache = new MemoryCache(new MemoryCacheOptions());
-        _store = new KuzuGraphStore(_pool, NullLogger.Instance, _cache);
+        var loggerMock = new Mock<ILogger<KuzuGraphStore>>();
+        _store = new KuzuGraphStore(_pool, loggerMock.Object, _cache);
     }
 
     [Fact]
