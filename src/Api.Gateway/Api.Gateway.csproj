@@ -9,7 +9,12 @@
     <PackageReference Include="Microsoft.AspNetCore.SignalR" Version="9.0.0" />
     <PackageReference Include="Scalar.AspNetCore" Version="1.2.*" />
     <PackageReference Include="Microsoft.AspNetCore.RateLimiting" Version="9.0.0" />
+    <PackageReference Include="Microsoft.SemanticKernel" Version="1.10.0" />
+    <PackageReference Include="Microsoft.SemanticKernel.Connectors.OpenAI" Version="1.10.0" />
     <ProjectReference Include="..\Core.Contracts\Core.Contracts.csproj" />
     <ProjectReference Include="..\Core.Domain\Core.Domain.csproj" />
+    <ProjectReference Include="..\Simulation.Engine\Simulation.Engine.csproj" />
+    <ProjectReference Include="..\Report.Agent\Report.Agent.csproj" />
+    <ProjectReference Include="..\Graph.KuzuDB\Graph.KuzuDB.csproj" />
   </ItemGroup>
 </Project>

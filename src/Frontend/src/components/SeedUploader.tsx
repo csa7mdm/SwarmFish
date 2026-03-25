@@ -4,15 +4,10 @@ import { useState, useRef } from 'react';
 import { UploadIcon, FileIcon, XIcon, CheckCircleIcon } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
-<<<<<<< HEAD
 import { api } from '@/lib/api';
 
 export interface UploadedFile {
   id: string;
-=======
-
-export interface UploadedFile {
->>>>>>> origin/feat/agent-c
   name: string;
   size: number;
   type: string;
@@ -53,11 +48,7 @@ export function SeedUploader({ onUploadComplete }: SeedUploaderProps) {
     }
 
     setFile(selectedFile);
-<<<<<<< HEAD
     performUpload(selectedFile);
-=======
-    simulateUpload(selectedFile);
->>>>>>> origin/feat/agent-c
   };
 
   const handleDrop = (e: React.DragEvent) => {
@@ -81,7 +72,6 @@ export function SeedUploader({ onUploadComplete }: SeedUploaderProps) {
     inputRef.current?.click();
   };
 
-<<<<<<< HEAD
   const performUpload = async (f: File) => {
     setStatus('uploading');
     setProgress(10);
@@ -114,46 +104,6 @@ export function SeedUploader({ onUploadComplete }: SeedUploaderProps) {
       setStatus('idle');
       alert("Upload failed. Please try again.");
     }
-=======
-  const simulateUpload = (f: File) => {
-    setStatus('uploading');
-    setProgress(0);
-    
-    // Simulate upload progress
-    const interval = setInterval(() => {
-      setProgress(p => {
-        if (p >= 100) {
-          clearInterval(interval);
-          setStatus('ingesting');
-          simulateIngestion(f);
-          return 100;
-        }
-        return p + 10;
-      });
-    }, 200);
-  };
-
-  const simulateIngestion = (f: File) => {
-    setProgress(0);
-    // Simulate ingestion pipeline progress
-    const interval = setInterval(() => {
-      setProgress(p => {
-        if (p >= 100) {
-          clearInterval(interval);
-          setStatus('complete');
-          if (onUploadComplete) {
-            onUploadComplete({
-              name: f.name,
-              size: f.size,
-              type: f.type || 'text/plain'
-            });
-          }
-          return 100;
-        }
-        return p + 5;
-      });
-    }, 150);
->>>>>>> origin/feat/agent-c
   };
 
   const clearFile = () => {

@@ -29,8 +29,8 @@ export default function DashboardPage() {
   useEffect(() => {
     fetchSimulations();
     
-    // SWR polling equivalent for mock
-    const interval = setInterval(fetchSimulations, 10000);
+    // Auto-refresh every 30 seconds
+    const interval = setInterval(fetchSimulations, 30000);
     return () => clearInterval(interval);
   }, []);
 

@@ -52,7 +52,6 @@ export default function ReportPage() {
     setInputMsg('');
     setIsChatting(true);
     
-<<<<<<< HEAD
     // Add a placeholder for the assistant's message that we will stream into
     const assistantMsgPlaceholder: ChatMessage = { 
       role: 'assistant', 
@@ -101,11 +100,6 @@ export default function ReportPage() {
         };
         return updatedHistory;
       });
-=======
-    try {
-      const response = await api.reports.chat(simulationId, newMsg.content, newHistory);
-      setChatHistory([...newHistory, { role: 'assistant', content: response, timestamp: new Date().toISOString() }]);
->>>>>>> origin/feat/agent-c
     } finally {
       setIsChatting(false);
     }
