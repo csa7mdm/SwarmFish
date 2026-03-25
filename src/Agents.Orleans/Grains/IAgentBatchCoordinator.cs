@@ -18,6 +18,5 @@ public interface IAgentBatchCoordinator : IGrainWithGuidKey
     /// <returns>The list of agent events produced by all agents in the batch.</returns>
     Task<IReadOnlyList<AgentEvent>> ProcessBatchAsync(
         IReadOnlyList<Guid> agentIds,
-        SimulationTick tick,
-        CancellationToken ct);
+        SimulationTick tick);
 }

@@ -45,7 +45,7 @@ public class AgentBatchCoordinatorTests
         {
             var grainMock = new Mock<IAgentGrain>();
             grainMock
-                .Setup(g => g.ProcessTickAsync(tick, CancellationToken.None))
+                .Setup(g => g.ProcessTickAsync(tick))
                 .ReturnsAsync(new AgentEvent(agentId, "spoke", "Hello", DateTimeOffset.UtcNow));
             _grainFactoryMock
                 .Setup(f => f.GetGrain<IAgentGrain>(agentId, null))
@@ -56,7 +56,7 @@ public class AgentBatchCoordinatorTests
             _grainFactoryMock.Object, _loggerMock.Object);
 
         // Act
-        var results = await coordinator.ProcessBatchAsync(agentIds, tick, CancellationToken.None);
+        var results = await coordinator.ProcessBatchAsync(agentIds, tick);
 
         // Assert
         Assert.Equal(agentIds.Count, results.Count);
@@ -74,12 +74,12 @@ public class AgentBatchCoordinatorTests
 
         var successGrain = new Mock<IAgentGrain>();
         successGrain
-            .Setup(g => g.ProcessTickAsync(tick, CancellationToken.None))
+            .Setup(g => g.ProcessTickAsync(tick))
             .ReturnsAsync(new AgentEvent(successId, "spoke", "Success", DateTimeOffset.UtcNow));
 
         var failureGrain = new Mock<IAgentGrain>();
         failureGrain
-            .Setup(g => g.ProcessTickAsync(tick, CancellationToken.None))
+            .Setup(g => g.ProcessTickAsync(tick))
             .ThrowsAsync(new InvalidOperationException("Agent not initialised"));
 
         _grainFactoryMock.Setup(f => f.GetGrain<IAgentGrain>(successId, null)).Returns(successGrain.Object);
@@ -89,7 +89,7 @@ public class AgentBatchCoordinatorTests
             _grainFactoryMock.Object, _loggerMock.Object);
 
         // Act
-        var results = await coordinator.ProcessBatchAsync(agentIds, tick, CancellationToken.None);
+        var results = await coordinator.ProcessBatchAsync(agentIds, tick);
 
         // Assert — both agents produce results, the failed one gets a "silent" fallback
         Assert.Equal(2, results.Count);
@@ -112,7 +112,7 @@ public class AgentBatchCoordinatorTests
         {
             var grainMock = new Mock<IAgentGrain>();
             grainMock
-                .Setup(g => g.ProcessTickAsync(tick, CancellationToken.None))
+                .Setup(g => g.ProcessTickAsync(tick))
                 .ReturnsAsync(new AgentEvent(agentId, "moved", "Moved", DateTimeOffset.UtcNow));
             _grainFactoryMock
                 .Setup(f => f.GetGrain<IAgentGrain>(agentId, null))
@@ -123,41 +123,13 @@ public class AgentBatchCoordinatorTests
             _grainFactoryMock.Object, _loggerMock.Object);
 
         // Act
-        var results = await coordinator.ProcessBatchAsync(agentIds, tick, CancellationToken.None);
+        var results = await coordinator.ProcessBatchAsync(agentIds, tick);
 
         // Assert
         Assert.Equal(120, results.Count);
     }
 
-    [Fact]
-    public async Task ProcessBatchAsync_SupportsCancellation()
-    {
-        // Arrange
-        var agentIds = Enumerable.Range(0, 100).Select(_ => Guid.NewGuid()).ToList();
-        var tick = CreateTestTick();
-        var cts = new CancellationTokenSource();
 
-        foreach (var agentId in agentIds)
-        {
-            var grainMock = new Mock<IAgentGrain>();
-            grainMock
-                .Setup(g => g.ProcessTickAsync(tick, CancellationToken.None))
-                .ReturnsAsync(new AgentEvent(agentId, "spoke", "Hello", DateTimeOffset.UtcNow));
-            _grainFactoryMock
-                .Setup(f => f.GetGrain<IAgentGrain>(agentId, null))
-                .Returns(grainMock.Object);
-        }
-
-        // Cancel immediately
-        await cts.CancelAsync();
-
-        var coordinator = new TestableBatchCoordinator(
-            _grainFactoryMock.Object, _loggerMock.Object);
-
-        // Act & Assert
-        await Assert.ThrowsAsync<OperationCanceledException>(
-            () => coordinator.ProcessBatchAsync(agentIds, tick, cts.Token));
-    }
 
     [Fact]
     public async Task ProcessBatchAsync_EmptyList_ReturnsEmptyResults()
@@ -168,7 +140,7 @@ public class AgentBatchCoordinatorTests
 
         // Act
         var results = await coordinator.ProcessBatchAsync(
-            Array.Empty<Guid>(), CreateTestTick(), CancellationToken.None);
+            Array.Empty<Guid>(), CreateTestTick());
 
         // Assert
         Assert.Empty(results);

@@ -1,0 +1,229 @@
+PASS src/__tests__/stores/simulation.test.ts
+FAIL src/__tests__/components/AgentEventFeed.test.tsx
+  ΓùÅ Test suite failed to run
+
+    Cannot find module 'class-variance-authority' from 'src/components/ui/badge.tsx'
+
+    Require stack:
+      src/components/ui/badge.tsx
+      src/components/AgentEventFeed.tsx
+      src/__tests__/components/AgentEventFeed.test.tsx
+
+      19 |         ghost:
+      20 |           "hover:bg-muted hover:text-muted-foreground dark:hover:bg-muted/50",
+    > 21 |         link: "text-primary underline-offset-4 hover:underline",
+         |                                 ^
+      22 |       },
+      23 |     },
+      24 |     defaultVariants: {
+
+      at Resolver._throwModNotFoundError (node_modules/.pnpm/jest-resolve@30.3.0/node_modules/jest-resolve/build/index.js:863:11)
+      at Object.<anonymous> (src/components/ui/badge.tsx:21:33)
+      at Object.<anonymous> (src/components/AgentEventFeed.tsx:15:16)
+      at Object.<anonymous> (src/__tests__/components/AgentEventFeed.test.tsx:11:25)
+
+FAIL src/__tests__/components/SimulationCard.test.tsx
+  ΓùÅ Test suite failed to run
+
+    Cannot find module 'class-variance-authority' from 'src/components/ui/badge.tsx'
+
+    Require stack:
+      src/components/ui/badge.tsx
+      src/components/SimulationCard.tsx
+      src/__tests__/components/SimulationCard.test.tsx
+
+      19 |         ghost:
+      20 |           "hover:bg-muted hover:text-muted-foreground dark:hover:bg-muted/50",
+    > 21 |         link: "text-primary underline-offset-4 hover:underline",
+         |                                 ^
+      22 |       },
+      23 |     },
+      24 |     defaultVariants: {
+
+      at Resolver._throwModNotFoundError (node_modules/.pnpm/jest-resolve@30.3.0/node_modules/jest-resolve/build/index.js:863:11)
+      at Object.<anonymous> (src/components/ui/badge.tsx:21:33)
+      at Object.<anonymous> (src/components/SimulationCard.tsx:13:16)
+      at Object.<anonymous> (src/__tests__/components/SimulationCard.test.tsx:7:25)
+
+FAIL src/__tests__/components/ConfidenceBar.test.tsx
+  ΓùÅ Console
+
+    console.error
+      An update to Root inside a test was not wrapped in act(...).
+      
+      When testing, code that causes React state updates should be wrapped into act(...):
+      
+      act(() => {
+        /* fire events that update state */
+      });
+      /* assert on the output */
+      
+      This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+      4 | describe('ConfidenceBar', () => {
+      5 |   it('renders label and percentage correctly', () => {
+    > 6 |     render(<ConfidenceBar score={0.82} label="Test Confidence" />);
+        |           ^
+      7 |     
+      8 |     expect(screen.getByText('Test Confidence')).toBeInTheDocument();
+      9 |     expect(screen.getByText('82%')).toBeInTheDocument();
+
+      at node_modules/.pnpm/react-dom@19.2.4_react@19.2.4/node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+      at runWithFiberInDEV (node_modules/.pnpm/react-dom@19.2.4_react@19.2.4/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/.pnpm/react-dom@19.2.4_react@19.2.4/node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+      at scheduleUpdateOnFiber (node_modules/.pnpm/react-dom@19.2.4_react@19.2.4/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+      at updateContainerImpl (node_modules/.pnpm/react-dom@19.2.4_react@19.2.4/node_modules/react-dom/cjs/react-dom-client.development.js:23509:9)
+      at ReactDOMRoot.process.env.NODE_ENV.ReactDOMHydrationRoot.render.ReactDOMRoot.render [as render] (node_modules/.pnpm/react-dom@19.2.4_react@19.2.4/node_modules/react-dom/cjs/react-dom-client.development.js:27893:9)
+      at Object.render (node_modules/.pnpm/@testing-library+react@16.3_893f466751a7d66081fd06e9edb9241a/node_modules/@testing-library/react/dist/pure.js:160:12)
+      at node_modules/.pnpm/@testing-library+react@16.3_893f466751a7d66081fd06e9edb9241a/node_modules/@testing-library/react/dist/pure.js:193:12
+      at node_modules/.pnpm/@testing-library+react@16.3_893f466751a7d66081fd06e9edb9241a/node_modules/@testing-library/react/dist/act-compat.js:47:24
+      at process.env.NODE_ENV.exports.act (node_modules/.pnpm/react@19.2.4/node_modules/react/cjs/react.development.js:814:22)
+      at node_modules/.pnpm/@testing-library+react@16.3_893f466751a7d66081fd06e9edb9241a/node_modules/@testing-library/react/dist/act-compat.js:46:25
+      at renderRoot (node_modules/.pnpm/@testing-library+react@16.3_893f466751a7d66081fd06e9edb9241a/node_modules/@testing-library/react/dist/pure.js:189:26)
+      at render (node_modules/.pnpm/@testing-library+react@16.3_893f466751a7d66081fd06e9edb9241a/node_modules/@testing-library/react/dist/pure.js:291:10)
+      at Object.<anonymous> (src/__tests__/components/ConfidenceBar.test.tsx:6:11)
+
+    console.error
+      An update to Root inside a test was not wrapped in act(...).
+      
+      When testing, code that causes React state updates should be wrapped into act(...):
+      
+      act(() => {
+        /* fire events that update state */
+      });
+      /* assert on the output */
+      
+      This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+      at node_modules/.pnpm/react-dom@19.2.4_react@19.2.4/node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+      at runWithFiberInDEV (node_modules/.pnpm/react-dom@19.2.4_react@19.2.4/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/.pnpm/react-dom@19.2.4_react@19.2.4/node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+      at scheduleUpdateOnFiber (node_modules/.pnpm/react-dom@19.2.4_react@19.2.4/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+      at updateContainerImpl (node_modules/.pnpm/react-dom@19.2.4_react@19.2.4/node_modules/react-dom/cjs/react-dom-client.development.js:23509:9)
+      at ReactDOMRoot.process.env.NODE_ENV.ReactDOMHydrationRoot.unmount.ReactDOMRoot.unmount [as unmount] (node_modules/.pnpm/react-dom@19.2.4_react@19.2.4/node_modules/react-dom/cjs/react-dom-client.development.js:27910:11)
+      at Object.unmount (node_modules/.pnpm/@testing-library+react@16.3_893f466751a7d66081fd06e9edb9241a/node_modules/@testing-library/react/dist/pure.js:163:12)
+      at node_modules/.pnpm/@testing-library+react@16.3_893f466751a7d66081fd06e9edb9241a/node_modules/@testing-library/react/dist/pure.js:307:12
+      at node_modules/.pnpm/@testing-library+react@16.3_893f466751a7d66081fd06e9edb9241a/node_modules/@testing-library/react/dist/act-compat.js:47:24
+      at process.env.NODE_ENV.exports.act (node_modules/.pnpm/react@19.2.4/node_modules/react/cjs/react.development.js:814:22)
+      at node_modules/.pnpm/@testing-library+react@16.3_893f466751a7d66081fd06e9edb9241a/node_modules/@testing-library/react/dist/act-compat.js:46:25
+      at node_modules/.pnpm/@testing-library+react@16.3_893f466751a7d66081fd06e9edb9241a/node_modules/@testing-library/react/dist/pure.js:306:28
+          at Array.forEach (<anonymous>)
+      at cleanup (node_modules/.pnpm/@testing-library+react@16.3_893f466751a7d66081fd06e9edb9241a/node_modules/@testing-library/react/dist/pure.js:302:22)
+      at Object.<anonymous> (node_modules/.pnpm/@testing-library+react@16.3_893f466751a7d66081fd06e9edb9241a/node_modules/@testing-library/react/dist/index.js:28:25)
+
+    console.error
+      An update to Root inside a test was not wrapped in act(...).
+      
+      When testing, code that causes React state updates should be wrapped into act(...):
+      
+      act(() => {
+        /* fire events that update state */
+      });
+      /* assert on the output */
+      
+      This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+      11 |
+      12 |   it('handles boundaries (0 and 1)', () => {
+    > 13 |     const { unmount } = render(<ConfidenceBar score={0} label="Min" />);
+         |                               ^
+      14 |     expect(screen.getByText('0%')).toBeInTheDocument();
+      15 |     unmount();
+      16 |     
+
+      at node_modules/.pnpm/react-dom@19.2.4_react@19.2.4/node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+      at runWithFiberInDEV (node_modules/.pnpm/react-dom@19.2.4_react@19.2.4/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/.pnpm/react-dom@19.2.4_react@19.2.4/node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+      at scheduleUpdateOnFiber (node_modules/.pnpm/react-dom@19.2.4_react@19.2.4/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+      at updateContainerImpl (node_modules/.pnpm/react-dom@19.2.4_react@19.2.4/node_modules/react-dom/cjs/react-dom-client.development.js:23509:9)
+      at ReactDOMRoot.process.env.NODE_ENV.ReactDOMHydrationRoot.render.ReactDOMRoot.render [as render] (node_modules/.pnpm/react-dom@19.2.4_react@19.2.4/node_modules/react-dom/cjs/react-dom-client.development.js:27893:9)
+      at Object.render (node_modules/.pnpm/@testing-library+react@16.3_893f466751a7d66081fd06e9edb9241a/node_modules/@testing-library/react/dist/pure.js:160:12)
+      at node_modules/.pnpm/@testing-library+react@16.3_893f466751a7d66081fd06e9edb9241a/node_modules/@testing-library/react/dist/pure.js:193:12
+      at node_modules/.pnpm/@testing-library+react@16.3_893f466751a7d66081fd06e9edb9241a/node_modules/@testing-library/react/dist/act-compat.js:47:24
+      at process.env.NODE_ENV.exports.act (node_modules/.pnpm/react@19.2.4/node_modules/react/cjs/react.development.js:814:22)
+      at node_modules/.pnpm/@testing-library+react@16.3_893f466751a7d66081fd06e9edb9241a/node_modules/@testing-library/react/dist/act-compat.js:46:25
+      at renderRoot (node_modules/.pnpm/@testing-library+react@16.3_893f466751a7d66081fd06e9edb9241a/node_modules/@testing-library/react/dist/pure.js:189:26)
+      at render (node_modules/.pnpm/@testing-library+react@16.3_893f466751a7d66081fd06e9edb9241a/node_modules/@testing-library/react/dist/pure.js:291:10)
+      at Object.<anonymous> (src/__tests__/components/ConfidenceBar.test.tsx:13:31)
+
+    console.error
+      An update to Root inside a test was not wrapped in act(...).
+      
+      When testing, code that causes React state updates should be wrapped into act(...):
+      
+      act(() => {
+        /* fire events that update state */
+      });
+      /* assert on the output */
+      
+      This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+      at node_modules/.pnpm/react-dom@19.2.4_react@19.2.4/node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+      at runWithFiberInDEV (node_modules/.pnpm/react-dom@19.2.4_react@19.2.4/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/.pnpm/react-dom@19.2.4_react@19.2.4/node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+      at scheduleUpdateOnFiber (node_modules/.pnpm/react-dom@19.2.4_react@19.2.4/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+      at updateContainerImpl (node_modules/.pnpm/react-dom@19.2.4_react@19.2.4/node_modules/react-dom/cjs/react-dom-client.development.js:23509:9)
+      at ReactDOMRoot.process.env.NODE_ENV.ReactDOMHydrationRoot.unmount.ReactDOMRoot.unmount [as unmount] (node_modules/.pnpm/react-dom@19.2.4_react@19.2.4/node_modules/react-dom/cjs/react-dom-client.development.js:27910:11)
+      at Object.unmount (node_modules/.pnpm/@testing-library+react@16.3_893f466751a7d66081fd06e9edb9241a/node_modules/@testing-library/react/dist/pure.js:163:12)
+      at node_modules/.pnpm/@testing-library+react@16.3_893f466751a7d66081fd06e9edb9241a/node_modules/@testing-library/react/dist/pure.js:307:12
+      at node_modules/.pnpm/@testing-library+react@16.3_893f466751a7d66081fd06e9edb9241a/node_modules/@testing-library/react/dist/act-compat.js:47:24
+      at process.env.NODE_ENV.exports.act (node_modules/.pnpm/react@19.2.4/node_modules/react/cjs/react.development.js:814:22)
+      at node_modules/.pnpm/@testing-library+react@16.3_893f466751a7d66081fd06e9edb9241a/node_modules/@testing-library/react/dist/act-compat.js:46:25
+      at node_modules/.pnpm/@testing-library+react@16.3_893f466751a7d66081fd06e9edb9241a/node_modules/@testing-library/react/dist/pure.js:306:28
+          at Array.forEach (<anonymous>)
+      at cleanup (node_modules/.pnpm/@testing-library+react@16.3_893f466751a7d66081fd06e9edb9241a/node_modules/@testing-library/react/dist/pure.js:302:22)
+      at Object.<anonymous> (node_modules/.pnpm/@testing-library+react@16.3_893f466751a7d66081fd06e9edb9241a/node_modules/@testing-library/react/dist/index.js:28:25)
+
+  ΓùÅ ConfidenceBar ΓÇ║ renders label and percentage correctly
+
+    TestingLibraryElementError: Unable to find an element with the text: Test Confidence. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+    Ignored nodes: comments, script, style
+    <body>
+      <div />
+    </body>
+
+       6 |     render(<ConfidenceBar score={0.82} label="Test Confidence" />);
+       7 |     
+    >  8 |     expect(screen.getByText('Test Confidence')).toBeInTheDocument();
+         |                   ^
+       9 |     expect(screen.getByText('82%')).toBeInTheDocument();
+      10 |   });
+      11 |
+
+      at Object.getElementError (node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/config.js:37:19)
+      at node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+      at node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+      at node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+      at Object.getByText (src/__tests__/components/ConfidenceBar.test.tsx:8:19)
+
+  ΓùÅ ConfidenceBar ΓÇ║ handles boundaries (0 and 1)
+
+    TestingLibraryElementError: Unable to find an element with the text: 0%. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+    Ignored nodes: comments, script, style
+    <body>
+      <div />
+    </body>
+
+      12 |   it('handles boundaries (0 and 1)', () => {
+      13 |     const { unmount } = render(<ConfidenceBar score={0} label="Min" />);
+    > 14 |     expect(screen.getByText('0%')).toBeInTheDocument();
+         |                   ^
+      15 |     unmount();
+      16 |     
+      17 |     render(<ConfidenceBar score={1} label="Max" />);
+
+      at Object.getElementError (node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/config.js:37:19)
+      at node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+      at node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+      at node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+      at Object.getByText (src/__tests__/components/ConfidenceBar.test.tsx:14:19)
+
+PASS src/__tests__/lib/api.test.ts
+
+Test Suites: 3 failed, 2 passed, 5 total
+Tests:       2 failed, 6 passed, 8 total
+Snapshots:   0 total
+Time:        6.388 s
+Ran all test suites.
