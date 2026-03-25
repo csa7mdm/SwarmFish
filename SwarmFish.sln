@@ -29,6 +29,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "integration", "integration"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Graph.KuzuDB.IntegrationTests", "tests\integration\Graph.KuzuDB.IntegrationTests\Graph.KuzuDB.IntegrationTests.csproj", "{EB37E44C-D1A7-458E-8226-F388E82ECABA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Api.Gateway", "src\Api.Gateway\Api.Gateway.csproj", "{6D92753F-C8E1-447B-8610-8B7AF5FAF214}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -147,6 +149,18 @@ Global
 		{EB37E44C-D1A7-458E-8226-F388E82ECABA}.Release|x64.Build.0 = Release|Any CPU
 		{EB37E44C-D1A7-458E-8226-F388E82ECABA}.Release|x86.ActiveCfg = Release|Any CPU
 		{EB37E44C-D1A7-458E-8226-F388E82ECABA}.Release|x86.Build.0 = Release|Any CPU
+		{6D92753F-C8E1-447B-8610-8B7AF5FAF214}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6D92753F-C8E1-447B-8610-8B7AF5FAF214}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6D92753F-C8E1-447B-8610-8B7AF5FAF214}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{6D92753F-C8E1-447B-8610-8B7AF5FAF214}.Debug|x64.Build.0 = Debug|Any CPU
+		{6D92753F-C8E1-447B-8610-8B7AF5FAF214}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{6D92753F-C8E1-447B-8610-8B7AF5FAF214}.Debug|x86.Build.0 = Debug|Any CPU
+		{6D92753F-C8E1-447B-8610-8B7AF5FAF214}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6D92753F-C8E1-447B-8610-8B7AF5FAF214}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6D92753F-C8E1-447B-8610-8B7AF5FAF214}.Release|x64.ActiveCfg = Release|Any CPU
+		{6D92753F-C8E1-447B-8610-8B7AF5FAF214}.Release|x64.Build.0 = Release|Any CPU
+		{6D92753F-C8E1-447B-8610-8B7AF5FAF214}.Release|x86.ActiveCfg = Release|Any CPU
+		{6D92753F-C8E1-447B-8610-8B7AF5FAF214}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -163,5 +177,6 @@ Global
 		{AD91C2A1-8E8F-4645-AC68-2B73586155AE} = {9D556B49-86D1-93A7-9596-FFAAB74EC556}
 		{28A6993C-471E-82FE-7D9E-AD3B1EC22BD9} = {0AB3BF05-4346-4AA6-1389-037BE0695223}
 		{EB37E44C-D1A7-458E-8226-F388E82ECABA} = {28A6993C-471E-82FE-7D9E-AD3B1EC22BD9}
+		{6D92753F-C8E1-447B-8610-8B7AF5FAF214} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 	EndGlobalSection
 EndGlobal
