@@ -82,9 +82,6 @@ export const api = {
     get: (simulationId: string): Promise<PredictionReport> => 
       fetchApi<PredictionReport>(`/api/reports/${simulationId}`),
       
-    // The chat endpoint uses streaming, so we fetch and process the stream manually in components,
-    // or expose a generator here. Let's expose an async function that returns the Response.
-    // The implementation specifically asked to stream the response. 
     chat: async (simulationId: string, message: string, history: ChatMessage[]): Promise<Response> => {
       return fetch(`${API_URL}/api/reports/${simulationId}/chat`, {
         method: 'POST',

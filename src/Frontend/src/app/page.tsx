@@ -1,64 +1,126 @@
-import Image from "next/image";
+"use client"
 
-export default function Home() {
+import { useEffect, useState } from 'react';
+import Link from 'next/link';
+import { api } from '@/lib/api';
+import { SimulationSummary } from '@/types/api';
+import { SimulationCard } from '@/components/SimulationCard';
+import { Button } from '@/components/ui/button';
+import { PlusIcon, ActivityIcon, RefreshCwIcon, Loader2Icon } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+
+export default function DashboardPage() {
+  const [simulations, setSimulations] = useState<SimulationSummary[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchSimulations = async () => {
+    try {
+      setIsLoading(true);
+      const data = await api.simulations.list();
+      setSimulations(data);
+    } catch (err) {
+      setError('Failed to load simulations');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchSimulations();
+    
+    // SWR polling equivalent for mock
+    const interval = setInterval(fetchSimulations, 10000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const activeCount = simulations.filter(s => s.status === 'Running' || s.status === 'Initialising').length;
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="min-h-screen bg-slate-950 text-slate-200">
+      <header className="border-b border-slate-800 bg-slate-900/50 sticky top-0 z-10 backdrop-blur-sm">
+        <div className="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-md bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-900/20">
+              <ActivityIcon className="w-5 h-5 text-white" />
+            </div>
+            <h1 className="text-xl font-semibold tracking-tight text-white">SwarmFish</h1>
+          </div>
+          
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 text-sm text-slate-400">
+              <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+              System Online
+            </div>
+            <Link href="/simulations/new">
+              <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white border-0">
+                <PlusIcon className="w-4 h-4 mr-1.5" />
+                New Simulation
+              </Button>
+            </Link>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </header>
+
+      <main className="max-w-6xl mx-auto px-6 py-8">
+        <div className="flex justify-between items-end mb-6">
+          <div>
+            <h2 className="text-2xl font-semibold text-white mb-1">Recent Simulations</h2>
+            <p className="text-slate-400 text-sm">
+              Manage and monitor your swarm intelligence runs.
+            </p>
+          </div>
+          
+          <div className="flex items-center gap-3">
+            <Badge variant="outline" className="bg-slate-900 border-slate-700 text-slate-300">
+              {activeCount} Active
+            </Badge>
+            <Button 
+              variant="outline" 
+              size="icon" 
+              className="bg-slate-900 border-slate-800 text-slate-400 hover:text-white"
+              onClick={fetchSimulations}
+              disabled={isLoading}
+            >
+              {isLoading ? <Loader2Icon className="w-4 h-4 animate-spin" /> : <RefreshCwIcon className="w-4 h-4" />}
+            </Button>
+          </div>
         </div>
+
+        {error && (
+          <div className="p-4 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 mb-6">
+            {error}
+          </div>
+        )}
+
+        {isLoading && simulations.length === 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[1, 2, 3].map(i => (
+              <div key={i} className="h-48 rounded-xl bg-slate-900/50 border border-slate-800 animate-pulse" />
+            ))}
+          </div>
+        ) : simulations.length === 0 ? (
+          <div className="py-16 text-center border-2 border-dashed border-slate-800 rounded-xl bg-slate-900/20">
+            <ActivityIcon className="w-12 h-12 text-slate-600 mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-slate-300 mb-2">No simulations found</h3>
+            <p className="text-slate-500 mb-6 max-w-md mx-auto">
+              You haven't run any swarm intelligence simulations yet. Upload a seed document to get started.
+            </p>
+            <Link href="/simulations/new">
+              <Button className="bg-white text-slate-950 hover:bg-slate-200">
+                Create First Simulation
+              </Button>
+            </Link>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {simulations.map(sim => (
+              <Link key={sim.id} href={`/simulations/${sim.id}`} className="block transition-transform hover:-translate-y-1">
+                <SimulationCard simulation={sim} />
+              </Link>
+            ))}
+          </div>
+        )}
       </main>
     </div>
   );
