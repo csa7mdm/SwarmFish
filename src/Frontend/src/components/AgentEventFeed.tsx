@@ -5,7 +5,6 @@ import { useSimulationStore } from '@/stores/simulation';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { BotIcon } from 'lucide-react';
-import { AgentEvent } from '@/types/api';
 
 interface AgentEventFeedProps {
   simulationId: string;

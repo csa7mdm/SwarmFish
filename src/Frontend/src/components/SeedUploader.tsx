@@ -4,8 +4,10 @@ import { useState, useRef } from 'react';
 import { UploadIcon, FileIcon, XIcon, CheckCircleIcon } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
+import { api } from '@/lib/api';
 
 export interface UploadedFile {
+  id: string;
   name: string;
   size: number;
   type: string;
@@ -46,7 +48,7 @@ export function SeedUploader({ onUploadComplete }: SeedUploaderProps) {
     }
 
     setFile(selectedFile);
-    simulateUpload(selectedFile);
+    performUpload(selectedFile);
   };
 
   const handleDrop = (e: React.DragEvent) => {
@@ -70,44 +72,38 @@ export function SeedUploader({ onUploadComplete }: SeedUploaderProps) {
     inputRef.current?.click();
   };
 
-  const simulateUpload = (f: File) => {
+  const performUpload = async (f: File) => {
     setStatus('uploading');
-    setProgress(0);
+    setProgress(10);
     
-    // Simulate upload progress
-    const interval = setInterval(() => {
-      setProgress(p => {
-        if (p >= 100) {
-          clearInterval(interval);
-          setStatus('ingesting');
-          simulateIngestion(f);
-          return 100;
-        }
-        return p + 10;
-      });
-    }, 200);
-  };
-
-  const simulateIngestion = (f: File) => {
-    setProgress(0);
-    // Simulate ingestion pipeline progress
-    const interval = setInterval(() => {
-      setProgress(p => {
-        if (p >= 100) {
-          clearInterval(interval);
-          setStatus('complete');
-          if (onUploadComplete) {
-            onUploadComplete({
-              name: f.name,
-              size: f.size,
-              type: f.type || 'text/plain'
-            });
-          }
-          return 100;
-        }
-        return p + 5;
-      });
-    }, 150);
+    try {
+      // We don't have real progress events from standard fetch without XHR,
+      // so we jump to 50% once started and 100% when done.
+      setProgress(50);
+      const result = await api.seeds.upload(f);
+      
+      setStatus('ingesting');
+      setProgress(80);
+      
+      // Artificial delay for 'ingesting' feel as the backend might still be processing
+      await new Promise(r => setTimeout(r, 1000));
+      
+      setStatus('complete');
+      setProgress(100);
+      
+      if (onUploadComplete) {
+        onUploadComplete({
+          id: result.seedId || result.id, // Support both common naming patterns
+          name: f.name,
+          size: f.size,
+          type: f.type || 'text/plain'
+        });
+      }
+    } catch (err) {
+      console.error("Upload failed", err);
+      setStatus('idle');
+      alert("Upload failed. Please try again.");
+    }
   };
 
   const clearFile = () => {

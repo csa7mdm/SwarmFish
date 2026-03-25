@@ -52,9 +52,54 @@ export default function ReportPage() {
     setInputMsg('');
     setIsChatting(true);
     
+    // Add a placeholder for the assistant's message that we will stream into
+    const assistantMsgPlaceholder: ChatMessage = { 
+      role: 'assistant', 
+      content: '', 
+      timestamp: new Date().toISOString() 
+    };
+    setChatHistory(prev => [...prev, assistantMsgPlaceholder]);
+    
     try {
       const response = await api.reports.chat(simulationId, newMsg.content, newHistory);
-      setChatHistory([...newHistory, { role: 'assistant', content: response, timestamp: new Date().toISOString() }]);
+      
+      if (!response.body) {
+        throw new Error('No response body');
+      }
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let done = false;
+      let streamedContent = '';
+
+      while (!done) {
+        const { value, done: doneReading } = await reader.read();
+        done = doneReading;
+        const chunkValue = decoder.decode(value);
+        streamedContent += chunkValue;
+        
+        // Update the last message in history with the accumulated content
+        setChatHistory(prev => {
+          const updatedHistory = [...prev];
+          const lastIndex = updatedHistory.length - 1;
+          updatedHistory[lastIndex] = { 
+            ...updatedHistory[lastIndex], 
+            content: streamedContent 
+          };
+          return updatedHistory;
+        });
+      }
+    } catch (err) {
+      console.error('Chat error:', err);
+      setChatHistory(prev => {
+        const updatedHistory = [...prev];
+        const lastIndex = updatedHistory.length - 1;
+        updatedHistory[lastIndex] = { 
+          ...updatedHistory[lastIndex], 
+          content: 'Sorry, I encountered an error while processing your request.' 
+        };
+        return updatedHistory;
+      });
     } finally {
       setIsChatting(false);
     }

@@ -2,8 +2,10 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import * as signalR from '@microsoft/signalr';
 import { useSimulationStore } from '@/stores/simulation';
 import { api } from '@/lib/api';
+import { AgentEvent, SimulationProgress } from '@/types/api';
 import { AgentEventFeed } from '@/components/AgentEventFeed';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
@@ -16,7 +18,13 @@ export default function LiveSimulationPage() {
   const router = useRouter();
   const simulationId = params.id as string;
   
-  const { currentSimulation, setCurrentSimulation, appendEvent, reset } = useSimulationStore();
+  const { 
+    currentSimulation, 
+    setCurrentSimulation, 
+    handleProgress,
+    appendEvent, 
+    reset 
+  } = useSimulationStore();
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
 
@@ -34,45 +42,50 @@ export default function LiveSimulationPage() {
       });
   }, [simulationId, setCurrentSimulation, reset]);
 
-  // Mock SignalR Event stream
+  // SignalR Real-time stream
   useEffect(() => {
-    if (!currentSimulation || currentSimulation.status !== 'Running') return;
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001';
+    const connection = new signalR.HubConnectionBuilder()
+      .withUrl(`${API_URL}/hubs/simulation`)
+      .withAutomaticReconnect()
+      .configureLogging(signalR.LogLevel.Information)
+      .build();
 
-    const eventTypes = ['spoke', 'reacted', 'silent', 'moved'];
-    const mockPayloads = [
-      "I believe we should hold our position given the latest data.",
-      "Agreed, the downside risk is too high.",
-      "Observed movement in the secondary market.",
-      "Adjusting prior assumptions based on new peer consensus.",
-      "No change to my current thesis.",
-    ];
-
-    const interval = setInterval(() => {
-      // Create 1-3 random events
-      const numEvents = Math.floor(Math.random() * 3) + 1;
-      
-      for(let i=0; i<numEvents; i++) {
-        const type = eventTypes[Math.floor(Math.random() * eventTypes.length)];
-        appendEvent({
-          agentId: `ag-${Math.floor(Math.random() * 1000).toString().padStart(4, '0')}`,
-          eventType: type,
-          payload: mockPayloads[Math.floor(Math.random() * mockPayloads.length)],
-          timestamp: new Date().toISOString()
-        });
+    const startConnection = async () => {
+      try {
+        await connection.start();
+        console.log('SignalR Connected.');
+        await connection.invoke('Subscribe', simulationId);
+      } catch (err) {
+        console.error('SignalR Connection Error: ', err);
+        setTimeout(startConnection, 5000);
       }
+    };
+
+    connection.on('ProgressUpdate', (progress: SimulationProgress) => {
+      handleProgress(progress);
       
-      // Occasionally update progress mock
-      if (Math.random() > 0.8) {
+      // Update local simulation ref if it's the one we're looking at
+      if (currentSimulation && currentSimulation.id === progress.simulationId) {
         setCurrentSimulation({
           ...currentSimulation,
-          currentRound: Math.min(currentSimulation.currentRound + 1, currentSimulation.totalRounds)
+          currentRound: progress.currentRound,
+          totalRounds: progress.totalRounds,
+          status: progress.state
         });
       }
-      
-    }, 800);
+    });
 
-    return () => clearInterval(interval);
-  }, [currentSimulation, appendEvent, setCurrentSimulation]);
+    connection.on('AgentEvent', (event: AgentEvent) => {
+      appendEvent(event);
+    });
+
+    startConnection();
+
+    return () => {
+      connection.stop();
+    };
+  }, [simulationId, handleProgress, appendEvent, currentSimulation, setCurrentSimulation]);
 
   if (isLoading) return <div className="min-h-screen bg-slate-950 flex items-center justify-center text-slate-500">Connecting to Simulation Engine...</div>;
   if (isError || !currentSimulation) return <div className="min-h-screen bg-slate-950 flex items-center justify-center text-red-500">Failed to load simulation</div>;

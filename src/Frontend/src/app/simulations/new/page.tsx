@@ -29,8 +29,7 @@ export default function NewSimulationPage() {
 
   const handleUploadComplete = async (fileInfo: UploadedFile) => {
     setSeedFile(fileInfo);
-    // In a real app we'd get the ID from the upload response
-    setSeedId(`seed-${Date.now()}`);
+    setSeedId(fileInfo.id);
     // Auto-advance after a short delay
     setTimeout(() => setStep(2), 1500);
   };
@@ -111,7 +110,7 @@ export default function NewSimulationPage() {
           </div>
         )}
 
-        {/* Step 2: Configure */}
+        {/* Step 2: Configuration */}
         {step === 2 && (
           <div className="animate-in fade-in slide-in-from-right-4 duration-300 space-y-8">
             <Card className="bg-slate-900/50 border-slate-800 shadow-xl shadow-black/20">
@@ -143,7 +142,7 @@ export default function NewSimulationPage() {
                       min={10} 
                       max={10000} 
                       step={10}
-                      onValueChange={(v) => setAgentCount(v[0])}
+                      onValueChange={(v) => { if (Array.isArray(v)) setAgentCount(v[0]); }}
                       className="py-4"
                     />
                   </div>
@@ -160,7 +159,7 @@ export default function NewSimulationPage() {
                       min={10} 
                       max={500} 
                       step={5}
-                      onValueChange={(v) => setMaxRounds(v[0])}
+                      onValueChange={(v) => { if (Array.isArray(v)) setMaxRounds(v[0]); }}
                       className="py-4"
                     />
                   </div>
