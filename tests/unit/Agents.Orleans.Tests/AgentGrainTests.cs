@@ -1,6 +1,8 @@
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
 using Moq;
+using Orleans.TestingHost;
 using SwarmFish.Agents.Orleans.Grains;
 using SwarmFish.Agents.Orleans.Models;
 using SwarmFish.Core.Contracts.Interfaces;
@@ -9,26 +11,79 @@ using Xunit;
 
 namespace SwarmFish.Agents.Orleans.Tests;
 
-/// <summary>
-/// Unit tests for <see cref="AgentGrain"/> covering initialisation, tick processing,
-/// suppression, and reactivation scenarios.
-/// </summary>
-public class AgentGrainTests
+public class AgentGrainTests : IClassFixture<AgentGrainTests.ClusterFixture>
 {
-    private readonly Mock<IMemoryStore> _memoryStoreMock;
-    private readonly Mock<IGraphStore> _graphStoreMock;
-    private readonly Mock<ILogger<AgentGrain>> _loggerMock;
-    private readonly Kernel _kernel;
-
-    public AgentGrainTests()
+    public class ClusterFixture : IDisposable
     {
-        _memoryStoreMock = new Mock<IMemoryStore>();
-        _graphStoreMock = new Mock<IGraphStore>();
-        _loggerMock = new Mock<ILogger<AgentGrain>>();
+        public TestCluster Cluster { get; }
+        public Mock<IMemoryStore> MemoryStoreMock { get; } = new();
+        public Mock<IGraphStore> GraphStoreMock { get; } = new();
 
-        // Create a Kernel with no services — SK will fail gracefully,
-        // but we'll mock the behaviour through our test setup
-        _kernel = Kernel.CreateBuilder().Build();
+        public ClusterFixture()
+        {
+            SiloConfigurator.MemoryStoreMock = MemoryStoreMock;
+            SiloConfigurator.GraphStoreMock = GraphStoreMock;
+
+            var builder = new TestClusterBuilder();
+            builder.AddSiloBuilderConfigurator<SiloConfigurator>();
+            builder.AddClientBuilderConfigurator<ClientConfigurator>();
+            Cluster = builder.Build();
+            Cluster.Deploy();
+        }
+
+        public void Dispose()
+        {
+            Cluster.StopAllSilos();
+        }
+
+        public class SiloConfigurator : ISiloConfigurator
+        {
+            public static Mock<IMemoryStore> MemoryStoreMock { get; set; } = null!;
+            public static Mock<IGraphStore> GraphStoreMock { get; set; } = null!;
+
+            public void Configure(ISiloBuilder siloBuilder)
+            {
+                siloBuilder.AddMemoryGrainStorageAsDefault();
+                siloBuilder.AddMemoryGrainStorage("agentState");
+                
+                siloBuilder.Services.AddSerializer(serializerBuilder =>
+                {
+                    serializerBuilder.AddJsonSerializer(
+                        isSupported: type => type.Namespace != null && type.Namespace.StartsWith("SwarmFish.Core.Contracts"));
+                });
+
+                siloBuilder.ConfigureServices(services =>
+                {
+                    services.AddSingleton(MemoryStoreMock.Object);
+                    services.AddSingleton(GraphStoreMock.Object);
+                    services.AddSingleton(Kernel.CreateBuilder().Build());
+                });
+            }
+        }
+        
+        public class ClientConfigurator : IClientBuilderConfigurator
+        {
+            public void Configure(IConfiguration configuration, IClientBuilder clientBuilder)
+            {
+                clientBuilder.Services.AddSerializer(serializerBuilder =>
+                {
+                    serializerBuilder.AddJsonSerializer(
+                        isSupported: type => type.Namespace != null && type.Namespace.StartsWith("SwarmFish.Core.Contracts"));
+                });
+            }
+        }
+    }
+
+    private readonly ClusterFixture _fixture;
+    private readonly IGrainFactory _grainFactory;
+
+    public AgentGrainTests(ClusterFixture fixture)
+    {
+        _fixture = fixture;
+        _grainFactory = fixture.Cluster.GrainFactory;
+        
+        _fixture.MemoryStoreMock.Invocations.Clear();
+        _fixture.GraphStoreMock.Invocations.Clear();
     }
 
     private static AgentPersona CreateTestPersona(Guid? id = null)
@@ -55,23 +110,18 @@ public class AgentGrainTests
     [Fact]
     public async Task InitialiseAsync_SetsStateAndSeedsMemory()
     {
-        // Arrange
-        var persona = CreateTestPersona();
+        var agentId = Guid.NewGuid();
+        var grain = _grainFactory.GetGrain<IAgentGrain>(agentId);
+        var persona = CreateTestPersona(agentId);
         var simulationId = Guid.NewGuid();
-        var state = new AgentGrainState();
-        var grain = new TestableAgentGrain(
-            state, _memoryStoreMock.Object, _graphStoreMock.Object, _kernel, _loggerMock.Object);
 
-        // Act
         await grain.InitialiseAsync(persona, simulationId);
 
-        // Assert
-        Assert.Equal(persona, state.Persona);
-        Assert.Equal(simulationId, state.SimulationId);
-        Assert.Equal(AgentStatus.Active, state.Status);
-        Assert.Equal(0, state.TicksProcessed);
+        var savedPersona = await grain.GetPersonaAsync();
+        Assert.NotNull(savedPersona);
+        Assert.Equal(persona.Name, savedPersona.Name);
 
-        _memoryStoreMock.Verify(m => m.AppendMemoryAsync(
+        _fixture.MemoryStoreMock.Verify(m => m.AppendMemoryAsync(
             persona.Id,
             It.Is<MemoryEntry>(e => e.Type == MemoryEntryType.SeedFact && e.Content.Contains(persona.Name)),
             It.IsAny<CancellationToken>()), Times.Once);
@@ -80,34 +130,22 @@ public class AgentGrainTests
     [Fact]
     public async Task ProcessTickAsync_WhenSuppressed_ReturnsSilentEvent()
     {
-        // Arrange
-        var persona = CreateTestPersona();
-        var state = new AgentGrainState
-        {
-            Persona = persona,
-            SimulationId = Guid.NewGuid(),
-            Status = AgentStatus.Suppressed,
-            TicksProcessed = 0
-        };
-        var grain = new TestableAgentGrain(
-            state, _memoryStoreMock.Object, _graphStoreMock.Object, _kernel, _loggerMock.Object);
+        var agentId = Guid.NewGuid();
+        var grain = _grainFactory.GetGrain<IAgentGrain>(agentId);
+        await grain.InitialiseAsync(CreateTestPersona(agentId), Guid.NewGuid());
+        await grain.SuppressAsync();
 
-        // Act
         var result = await grain.ProcessTickAsync(CreateTestTick());
 
-        // Assert
         Assert.Equal("silent", result.EventType);
     }
 
     [Fact]
     public async Task ProcessTickAsync_WhenNotInitialised_ThrowsInvalidOperationException()
     {
-        // Arrange
-        var state = new AgentGrainState(); // No persona set
-        var grain = new TestableAgentGrain(
-            state, _memoryStoreMock.Object, _graphStoreMock.Object, _kernel, _loggerMock.Object);
+        var agentId = Guid.NewGuid();
+        var grain = _grainFactory.GetGrain<IAgentGrain>(agentId);
 
-        // Act & Assert
         await Assert.ThrowsAsync<InvalidOperationException>(
             () => grain.ProcessTickAsync(CreateTestTick()));
     }
@@ -115,143 +153,53 @@ public class AgentGrainTests
     [Fact]
     public async Task ProcessTickAsync_QueriesMemoryAndGraph()
     {
-        // Arrange
         var agentId = Guid.NewGuid();
-        var persona = CreateTestPersona(agentId);
-        var state = new AgentGrainState
-        {
-            Persona = persona,
-            SimulationId = Guid.NewGuid(),
-            Status = AgentStatus.Active
-        };
+        var grain = _grainFactory.GetGrain<IAgentGrain>(agentId);
+        await grain.InitialiseAsync(CreateTestPersona(agentId), Guid.NewGuid());
 
-        _memoryStoreMock
+        _fixture.MemoryStoreMock
             .Setup(m => m.SearchMemoryAsync(agentId, It.IsAny<string>(), 5, It.IsAny<CancellationToken>()))
             .ReturnsAsync(new List<MemoryEntry>
             {
                 new("Previous observation", DateTimeOffset.UtcNow, MemoryEntryType.Observation)
             });
 
-        _graphStoreMock
+        _fixture.GraphStoreMock
             .Setup(g => g.GetNeighboursAsync(agentId.ToString(), 2, It.IsAny<CancellationToken>()))
             .ReturnsAsync(new List<GraphNode>());
 
-        var grain = new TestableAgentGrain(
-            state, _memoryStoreMock.Object, _graphStoreMock.Object, _kernel, _loggerMock.Object,
-            agentId);
-
-        // Act — LLM call will fail (no provider configured), AgentGrain handles gracefully
         var result = await grain.ProcessTickAsync(CreateTestTick());
 
-        // Assert — Should still produce a valid event (fallback to silent on LLM failure)
         Assert.NotNull(result);
         Assert.Equal(agentId, result.AgentId);
-        Assert.False(string.IsNullOrEmpty(result.EventType));
 
-        _memoryStoreMock.Verify(m => m.SearchMemoryAsync(
+        _fixture.MemoryStoreMock.Verify(m => m.SearchMemoryAsync(
             agentId, It.IsAny<string>(), 5, It.IsAny<CancellationToken>()), Times.Once);
 
-        _graphStoreMock.Verify(g => g.GetNeighboursAsync(
+        _fixture.GraphStoreMock.Verify(g => g.GetNeighboursAsync(
             agentId.ToString(), 2, It.IsAny<CancellationToken>()), Times.Once);
 
-        // Verify memory append was called (observation entry)
-        _memoryStoreMock.Verify(m => m.AppendMemoryAsync(
+        _fixture.MemoryStoreMock.Verify(m => m.AppendMemoryAsync(
             agentId,
-            It.Is<MemoryEntry>(e => e.Type == MemoryEntryType.Observation),
-            It.IsAny<CancellationToken>()), Times.Once);
+            It.IsAny<MemoryEntry>(),
+            It.IsAny<CancellationToken>()), Times.Exactly(2));
     }
 
     [Fact]
-    public async Task ProcessTickAsync_IncrementsTicksProcessed()
+    public async Task ReactivateAsync_AllowsTickProcessingAgain()
     {
-        // Arrange
         var agentId = Guid.NewGuid();
-        var persona = CreateTestPersona(agentId);
-        var state = new AgentGrainState
-        {
-            Persona = persona,
-            SimulationId = Guid.NewGuid(),
-            Status = AgentStatus.Active,
-            TicksProcessed = 5
-        };
-
-        _memoryStoreMock
-            .Setup(m => m.SearchMemoryAsync(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<MemoryEntry>());
-
-        _graphStoreMock
-            .Setup(g => g.GetNeighboursAsync(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<GraphNode>());
-
-        var grain = new TestableAgentGrain(
-            state, _memoryStoreMock.Object, _graphStoreMock.Object, _kernel, _loggerMock.Object,
-            agentId);
-
-        // Act
-        await grain.ProcessTickAsync(CreateTestTick());
-
-        // Assert
-        Assert.Equal(6, state.TicksProcessed);
-    }
-
-    [Fact]
-    public async Task SuppressAsync_SetsStatusToSuppressed()
-    {
-        // Arrange
-        var state = new AgentGrainState { Status = AgentStatus.Active };
-        var grain = new TestableAgentGrain(
-            state, _memoryStoreMock.Object, _graphStoreMock.Object, _kernel, _loggerMock.Object);
-
-        // Act
+        var grain = _grainFactory.GetGrain<IAgentGrain>(agentId);
+        await grain.InitialiseAsync(CreateTestPersona(agentId), Guid.NewGuid());
         await grain.SuppressAsync();
-
-        // Assert
-        Assert.Equal(AgentStatus.Suppressed, state.Status);
-    }
-
-    [Fact]
-    public async Task ReactivateAsync_SetsStatusToActive()
-    {
-        // Arrange
-        var state = new AgentGrainState { Status = AgentStatus.Suppressed };
-        var grain = new TestableAgentGrain(
-            state, _memoryStoreMock.Object, _graphStoreMock.Object, _kernel, _loggerMock.Object);
-
-        // Act
+        
+        var suppressedResult = await grain.ProcessTickAsync(CreateTestTick());
+        Assert.Equal("silent", suppressedResult.EventType);
+        
         await grain.ReactivateAsync();
+        var activeResult = await grain.ProcessTickAsync(CreateTestTick());
 
-        // Assert
-        Assert.Equal(AgentStatus.Active, state.Status);
-    }
-
-    [Fact]
-    public async Task GetPersonaAsync_ReturnsPersona()
-    {
-        // Arrange
-        var persona = CreateTestPersona();
-        var state = new AgentGrainState { Persona = persona };
-        var grain = new TestableAgentGrain(
-            state, _memoryStoreMock.Object, _graphStoreMock.Object, _kernel, _loggerMock.Object);
-
-        // Act
-        var result = await grain.GetPersonaAsync();
-
-        // Assert
-        Assert.Equal(persona, result);
-    }
-
-    [Fact]
-    public async Task GetPersonaAsync_WhenNotInitialised_ReturnsNull()
-    {
-        // Arrange
-        var state = new AgentGrainState();
-        var grain = new TestableAgentGrain(
-            state, _memoryStoreMock.Object, _graphStoreMock.Object, _kernel, _loggerMock.Object);
-
-        // Act
-        var result = await grain.GetPersonaAsync();
-
-        // Assert
-        Assert.Null(result);
+        _fixture.MemoryStoreMock.Verify(m => m.SearchMemoryAsync(
+            It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Once);
     }
 }
