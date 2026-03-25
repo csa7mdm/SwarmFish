@@ -1,3 +1,4 @@
+using Xunit;
 using NSubstitute;
 using Microsoft.Extensions.Options;
 using SwarmFish.Core.Contracts.Interfaces;

@@ -1,3 +1,4 @@
+using Xunit;
 namespace SwarmFish.Memory.Zep.Tests;
 
 /// <summary>

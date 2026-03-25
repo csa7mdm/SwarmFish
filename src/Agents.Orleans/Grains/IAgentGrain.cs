@@ -1,5 +1,4 @@
 using SwarmFish.Agents.Orleans.Models;
-using SwarmFish.Core.Contracts.Interfaces;
 using SwarmFish.Core.Contracts.Models;
 
 namespace SwarmFish.Agents.Orleans.Grains;

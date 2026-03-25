@@ -44,7 +44,8 @@ public class AgentBatchCoordinator : Grain, IAgentBatchCoordinator
     /// <inheritdoc />
     public async Task<IReadOnlyList<AgentEvent>> ProcessBatchAsync(
         IReadOnlyList<Guid> agentIds,
-        SimulationTick tick)
+        SimulationTick tick,
+        CancellationToken ct)
     {
         _logger.LogInformation(
             "Processing batch of {AgentCount} agents for round {Round}",
@@ -55,6 +56,7 @@ public class AgentBatchCoordinator : Grain, IAgentBatchCoordinator
 
         foreach (var batch in batches)
         {
+            ct.ThrowIfCancellationRequested();
 
             var stopwatch = Stopwatch.StartNew();
 

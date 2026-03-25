@@ -13,7 +13,7 @@ namespace SwarmFish.Agents.Orleans.Grains;
 /// Manages persona state, processes simulation ticks via Semantic Kernel,
 /// and interacts with memory and graph stores.
 /// </summary>
-public class AgentGrain : Grain<AgentGrainState>, IAgentGrain, IAgent
+public class AgentGrain : Grain<AgentGrainState>, IAgentGrain
 {
     private readonly IMemoryStore _memoryStore;
     private readonly IGraphStore _graphStore;
@@ -64,26 +64,7 @@ public class AgentGrain : Grain<AgentGrainState>, IAgentGrain, IAgent
     }
 
     /// <inheritdoc />
-    public Guid Id => this.GetPrimaryKey();
-
-    /// <inheritdoc />
-    public string Persona => System.Text.Json.JsonSerializer.Serialize(State.Persona);
-
-    /// <inheritdoc />
-    public AgentStatus Status => State.Status;
-
-    /// <inheritdoc />
-    public Task<AgentEvent> ProcessTickAsync(SimulationTick tick)
-    {
-        return ProcessTickInternalAsync(tick, CancellationToken.None);
-    }
-
-    Task<AgentEvent> IAgent.ProcessTickAsync(SimulationTick tick, CancellationToken ct)
-    {
-        return ProcessTickInternalAsync(tick, ct);
-    }
-
-    private async Task<AgentEvent> ProcessTickInternalAsync(SimulationTick tick, CancellationToken ct)
+    public async Task<AgentEvent> ProcessTickAsync(SimulationTick tick)
     {
         var agentId = this.GetPrimaryKey();
 
@@ -103,13 +84,13 @@ public class AgentGrain : Grain<AgentGrainState>, IAgentGrain, IAgent
             agentId,
             $"round {tick.Round} {tick.Context.PredictionQuery}",
             topK: 5,
-            ct);
+            CancellationToken.None);
 
         // 2. Retrieve graph context (2-hop neighbourhood)
         var neighbours = await _graphStore.GetNeighboursAsync(
             agentId.ToString(),
             depth: 2,
-            ct);
+            CancellationToken.None);
 
         // 3. Build prompt
         var prompt = BuildPrompt(State.Persona, memories, neighbours, tick);
@@ -118,16 +99,14 @@ public class AgentGrain : Grain<AgentGrainState>, IAgentGrain, IAgent
         string llmResponse;
         try
         {
-            var result = await _kernel.InvokePromptAsync(prompt, cancellationToken: ct);
+            var result = await _kernel.InvokePromptAsync(prompt);
             llmResponse = result.GetValue<string>() ?? "{}";
         }
-        catch (Exception ex) when (ex is not OperationCanceledException)
+        catch (Exception ex)
         {
             _logger.LogWarning(ex, "LLM call failed for agent {AgentId} at round {Round}, returning silent", agentId, tick.Round);
             llmResponse = """{"eventType": "silent", "payload": "LLM call failed", "targetAgentId": null}""";
         }
-
-        ct.ThrowIfCancellationRequested();
 
         // 5. Parse response into AgentEvent
         var agentEvent = ParseLlmResponse(agentId, llmResponse);
@@ -138,7 +117,7 @@ public class AgentGrain : Grain<AgentGrainState>, IAgentGrain, IAgent
             CreatedAt: DateTimeOffset.UtcNow,
             Type: MemoryEntryType.Observation);
 
-        await _memoryStore.AppendMemoryAsync(agentId, memoryEntry, ct);
+        await _memoryStore.AppendMemoryAsync(agentId, memoryEntry, CancellationToken.None);
 
         // 7. Update state
         State.TicksProcessed++;
