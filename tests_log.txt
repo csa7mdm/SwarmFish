@@ -1,0 +1,73 @@
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Core.Contracts -> D:\swarmfish\src\Core.Contracts\bin\Debug\net9.0\Core.Contracts.dll
+  Agents.Orleans -> D:\swarmfish\src\Agents.Orleans\bin\Debug\net9.0\Agents.Orleans.dll
+  Agents.Orleans.Tests -> D:\swarmfish\tests\unit\Agents.Orleans.Tests\bin\Debug\net9.0\Agents.Orleans.Tests.dll
+Test run for D:\swarmfish\tests\unit\Agents.Orleans.Tests\bin\Debug\net9.0\Agents.Orleans.Tests.dll (.NETCoreApp,Version=v9.0)
+VSTest version 18.0.1 (x64)
+
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+D:\swarmfish\tests\unit\Agents.Orleans.Tests\bin\Debug\net9.0\Agents.Orleans.Tests.dll
+[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.8.2+699d445a1a (64-bit .NET 9.0.11)
+[xUnit.net 00:00:00.08]   Discovering: Agents.Orleans.Tests
+[xUnit.net 00:00:00.12]   Discovered:  Agents.Orleans.Tests
+[xUnit.net 00:00:00.12]   Starting:    Agents.Orleans.Tests
+----------------------------- STARTING NEW UNIT TEST SILO HOST: Orleans.TestingHost.TestCluster -------------------------------------
+[xUnit.net 00:00:00.25]     SwarmFish.Agents.Orleans.Tests.AgentGrainTests.InitialiseAsync_SetsStateAndSeedsMemory [FAIL]
+[xUnit.net 00:00:00.25]       Class fixture type 'SwarmFish.Agents.Orleans.Tests.AgentGrainTests+ClusterFixture' threw in its constructor
+[xUnit.net 00:00:00.25]       ---- System.MissingMethodException : Method not found: '!!0 Orleans.Serialization.Invocation.ITargetHolder.GetComponent()'.
+[xUnit.net 00:00:00.25]       Stack Trace:
+[xUnit.net 00:00:00.26]         
+[xUnit.net 00:00:00.26]         ----- Inner Stack Trace -----
+[xUnit.net 00:00:00.26]            at Orleans.Hosting.DefaultSiloServices.AddDefaultServices(ISiloBuilder builder)
+[xUnit.net 00:00:00.26]         /_/src/Orleans.Runtime/Hosting/SiloBuilder.cs(15,0): at Orleans.Hosting.SiloBuilder..ctor(IServiceCollection services, IConfiguration configuration)
+[xUnit.net 00:00:00.26]         /_/src/Orleans.Runtime/Hosting/OrleansSiloGenericHostExtensions.cs(165,0): at Microsoft.Extensions.Hosting.OrleansSiloGenericHostExtensions.AddOrleansCore(IServiceCollection services, IConfiguration configuration)
+[xUnit.net 00:00:00.26]         /_/src/Orleans.Runtime/Hosting/OrleansSiloGenericHostExtensions.cs(123,0): at Microsoft.Extensions.Hosting.OrleansSiloGenericHostExtensions.<>c__DisplayClass6_0.<UseOrleans>b__0(HostBuilderContext context, IServiceCollection services)
+[xUnit.net 00:00:00.26]            at Microsoft.Extensions.Hosting.HostBuilder.InitializeServiceProvider()
+[xUnit.net 00:00:00.26]            at Microsoft.Extensions.Hosting.HostBuilder.Build()
+[xUnit.net 00:00:00.26]         /_/src/Orleans.TestingHost/TestClusterHostFactory.cs(69,0): at Orleans.TestingHost.TestClusterHostFactory.CreateSiloHost(String hostName, IConfiguration configuration, Action`1 postConfigureHostBuilder)
+[xUnit.net 00:00:00.26]         /_/src/Orleans.TestingHost/InProcessSiloHandle.cs(38,0): at Orleans.TestingHost.InProcessSiloHandle.<>c__DisplayClass7_0.<<CreateAsync>b__0>d.MoveNext()
+[xUnit.net 00:00:00.26]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.26]         /_/src/Orleans.TestingHost/InProcessSiloHandle.cs(36,0): at Orleans.TestingHost.InProcessSiloHandle.CreateAsync(String siloName, IConfiguration configuration, Action`1 postConfigureHostBuilder)
+[xUnit.net 00:00:00.26]         /_/src/Orleans.TestingHost/TestCluster.cs(661,0): at Orleans.TestingHost.TestCluster.DefaultCreateSiloAsync(String siloName, IConfiguration configuration)
+[xUnit.net 00:00:00.26]         /_/src/Orleans.TestingHost/TestCluster.cs(724,0): at Orleans.TestingHost.TestCluster.StartSiloAsync(Int32 instanceNumber, TestClusterOptions clusterOptions, IReadOnlyList`1 configurationOverrides, Boolean startSiloOnNewPort)
+[xUnit.net 00:00:00.26]         /_/src/Orleans.TestingHost/TestCluster.cs(636,0): at Orleans.TestingHost.TestCluster.InitializeAsync()
+[xUnit.net 00:00:00.26]         /_/src/Orleans.TestingHost/TestCluster.cs(167,0): at Orleans.TestingHost.TestCluster.DeployAsync()
+[xUnit.net 00:00:00.26]         /_/src/Orleans.TestingHost/TestCluster.cs(202,0): at Orleans.TestingHost.TestCluster.DeployAsync()
+[xUnit.net 00:00:00.26]         /_/src/Orleans.TestingHost/TestCluster.cs(151,0): at Orleans.TestingHost.TestCluster.Deploy()
+[xUnit.net 00:00:00.26]         D:\swarmfish\tests\unit\Agents.Orleans.Tests\AgentGrainTests.cs(33,0): at SwarmFish.Agents.Orleans.Tests.AgentGrainTests.ClusterFixture..ctor()
+[xUnit.net 00:00:00.26]            at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+[xUnit.net 00:00:00.26]            at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+[xUnit.net 00:00:00.26]   Finished:    Agents.Orleans.Tests
+  Failed SwarmFish.Agents.Orleans.Tests.AgentGrainTests.InitialiseAsync_SetsStateAndSeedsMemory [1 ms]
+  Error Message:
+   Class fixture type 'SwarmFish.Agents.Orleans.Tests.AgentGrainTests+ClusterFixture' threw in its constructor
+---- System.MissingMethodException : Method not found: '!!0 Orleans.Serialization.Invocation.ITargetHolder.GetComponent()'.
+  Stack Trace:
+  
+----- Inner Stack Trace -----
+   at Orleans.Hosting.DefaultSiloServices.AddDefaultServices(ISiloBuilder builder)
+   at Orleans.Hosting.SiloBuilder..ctor(IServiceCollection services, IConfiguration configuration) in /_/src/Orleans.Runtime/Hosting/SiloBuilder.cs:line 15
+   at Microsoft.Extensions.Hosting.OrleansSiloGenericHostExtensions.AddOrleansCore(IServiceCollection services, IConfiguration configuration) in /_/src/Orleans.Runtime/Hosting/OrleansSiloGenericHostExtensions.cs:line 165
+   at Microsoft.Extensions.Hosting.OrleansSiloGenericHostExtensions.<>c__DisplayClass6_0.<UseOrleans>b__0(HostBuilderContext context, IServiceCollection services) in /_/src/Orleans.Runtime/Hosting/OrleansSiloGenericHostExtensions.cs:line 123
+   at Microsoft.Extensions.Hosting.HostBuilder.InitializeServiceProvider()
+   at Microsoft.Extensions.Hosting.HostBuilder.Build()
+   at Orleans.TestingHost.TestClusterHostFactory.CreateSiloHost(String hostName, IConfiguration configuration, Action`1 postConfigureHostBuilder) in /_/src/Orleans.TestingHost/TestClusterHostFactory.cs:line 69
+   at Orleans.TestingHost.InProcessSiloHandle.<>c__DisplayClass7_0.<<CreateAsync>b__0>d.MoveNext() in /_/src/Orleans.TestingHost/InProcessSiloHandle.cs:line 38
+--- End of stack trace from previous location ---
+   at Orleans.TestingHost.InProcessSiloHandle.CreateAsync(String siloName, IConfiguration configuration, Action`1 postConfigureHostBuilder) in /_/src/Orleans.TestingHost/InProcessSiloHandle.cs:line 36
+   at Orleans.TestingHost.TestCluster.DefaultCreateSiloAsync(String siloName, IConfiguration configuration) in /_/src/Orleans.TestingHost/TestCluster.cs:line 661
+   at Orleans.TestingHost.TestCluster.StartSiloAsync(Int32 instanceNumber, TestClusterOptions clusterOptions, IReadOnlyList`1 configurationOverrides, Boolean startSiloOnNewPort) in /_/src/Orleans.TestingHost/TestCluster.cs:line 724
+   at Orleans.TestingHost.TestCluster.InitializeAsync() in /_/src/Orleans.TestingHost/TestCluster.cs:line 636
+   at Orleans.TestingHost.TestCluster.DeployAsync() in /_/src/Orleans.TestingHost/TestCluster.cs:line 167
+   at Orleans.TestingHost.TestCluster.DeployAsync() in /_/src/Orleans.TestingHost/TestCluster.cs:line 202
+   at Orleans.TestingHost.TestCluster.Deploy() in /_/src/Orleans.TestingHost/TestCluster.cs:line 151
+   at SwarmFish.Agents.Orleans.Tests.AgentGrainTests.ClusterFixture..ctor() in D:\swarmfish\tests\unit\Agents.Orleans.Tests\AgentGrainTests.cs:line 33
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+
+Test Run Failed.
+Total tests: 1
+     Failed: 1
+ Total time: 0.8209 Seconds
