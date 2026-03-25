@@ -45,7 +45,7 @@ public class AgentBatchCoordinatorTests
         {
             var grainMock = new Mock<IAgentGrain>();
             grainMock
-                .Setup(g => g.ProcessTickAsync(tick))
+                .Setup(g => g.ProcessTickAsync(tick, CancellationToken.None))
                 .ReturnsAsync(new AgentEvent(agentId, "spoke", "Hello", DateTimeOffset.UtcNow));
             _grainFactoryMock
                 .Setup(f => f.GetGrain<IAgentGrain>(agentId, null))
@@ -74,12 +74,12 @@ public class AgentBatchCoordinatorTests
 
         var successGrain = new Mock<IAgentGrain>();
         successGrain
-            .Setup(g => g.ProcessTickAsync(tick))
+            .Setup(g => g.ProcessTickAsync(tick, CancellationToken.None))
             .ReturnsAsync(new AgentEvent(successId, "spoke", "Success", DateTimeOffset.UtcNow));
 
         var failureGrain = new Mock<IAgentGrain>();
         failureGrain
-            .Setup(g => g.ProcessTickAsync(tick))
+            .Setup(g => g.ProcessTickAsync(tick, CancellationToken.None))
             .ThrowsAsync(new InvalidOperationException("Agent not initialised"));
 
         _grainFactoryMock.Setup(f => f.GetGrain<IAgentGrain>(successId, null)).Returns(successGrain.Object);
@@ -112,7 +112,7 @@ public class AgentBatchCoordinatorTests
         {
             var grainMock = new Mock<IAgentGrain>();
             grainMock
-                .Setup(g => g.ProcessTickAsync(tick))
+                .Setup(g => g.ProcessTickAsync(tick, CancellationToken.None))
                 .ReturnsAsync(new AgentEvent(agentId, "moved", "Moved", DateTimeOffset.UtcNow));
             _grainFactoryMock
                 .Setup(f => f.GetGrain<IAgentGrain>(agentId, null))
@@ -141,7 +141,7 @@ public class AgentBatchCoordinatorTests
         {
             var grainMock = new Mock<IAgentGrain>();
             grainMock
-                .Setup(g => g.ProcessTickAsync(tick))
+                .Setup(g => g.ProcessTickAsync(tick, CancellationToken.None))
                 .ReturnsAsync(new AgentEvent(agentId, "spoke", "Hello", DateTimeOffset.UtcNow));
             _grainFactoryMock
                 .Setup(f => f.GetGrain<IAgentGrain>(agentId, null))

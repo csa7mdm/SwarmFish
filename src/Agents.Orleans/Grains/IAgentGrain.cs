@@ -1,4 +1,5 @@
 using SwarmFish.Agents.Orleans.Models;
+using SwarmFish.Core.Contracts.Interfaces;
 using SwarmFish.Core.Contracts.Models;
 
 namespace SwarmFish.Agents.Orleans.Grains;
@@ -7,7 +8,7 @@ namespace SwarmFish.Agents.Orleans.Grains;
 /// Orleans grain interface representing a single simulated agent.
 /// Each grain is addressed by the agent's unique <see cref="Guid"/> key.
 /// </summary>
-public interface IAgentGrain : IGrainWithGuidKey
+public interface IAgentGrain : IGrainWithGuidKey, IAgent
 {
     /// <summary>
     /// Initialises the agent grain with a persona and associates it with a simulation.
@@ -16,12 +17,8 @@ public interface IAgentGrain : IGrainWithGuidKey
     /// <param name="simulationId">The simulation this agent belongs to.</param>
     Task InitialiseAsync(AgentPersona persona, Guid simulationId);
 
-    /// <summary>
-    /// Processes a single simulation tick and returns the resulting event.
-    /// </summary>
-    /// <param name="tick">The simulation tick to process.</param>
-    /// <returns>The event produced by this agent for the given tick.</returns>
-    Task<AgentEvent> ProcessTickAsync(SimulationTick tick);
+    // ProcessTickAsync is inherited from IAgent: 
+    // Task<AgentEvent> ProcessTickAsync(SimulationTick tick, CancellationToken ct);
 
     /// <summary>
     /// Retrieves the current persona assigned to this agent.

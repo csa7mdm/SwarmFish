@@ -135,7 +135,7 @@ public class AgentGrainTests : IClassFixture<AgentGrainTests.ClusterFixture>
         await grain.InitialiseAsync(CreateTestPersona(agentId), Guid.NewGuid());
         await grain.SuppressAsync();
 
-        var result = await grain.ProcessTickAsync(CreateTestTick());
+        var result = await grain.ProcessTickAsync(CreateTestTick(), CancellationToken.None);
 
         Assert.Equal("silent", result.EventType);
     }
@@ -147,7 +147,7 @@ public class AgentGrainTests : IClassFixture<AgentGrainTests.ClusterFixture>
         var grain = _grainFactory.GetGrain<IAgentGrain>(agentId);
 
         await Assert.ThrowsAsync<InvalidOperationException>(
-            () => grain.ProcessTickAsync(CreateTestTick()));
+            () => grain.ProcessTickAsync(CreateTestTick(), CancellationToken.None));
     }
 
     [Fact]
@@ -168,7 +168,7 @@ public class AgentGrainTests : IClassFixture<AgentGrainTests.ClusterFixture>
             .Setup(g => g.GetNeighboursAsync(agentId.ToString(), 2, It.IsAny<CancellationToken>()))
             .ReturnsAsync(new List<GraphNode>());
 
-        var result = await grain.ProcessTickAsync(CreateTestTick());
+        var result = await grain.ProcessTickAsync(CreateTestTick(), CancellationToken.None);
 
         Assert.NotNull(result);
         Assert.Equal(agentId, result.AgentId);
@@ -193,11 +193,11 @@ public class AgentGrainTests : IClassFixture<AgentGrainTests.ClusterFixture>
         await grain.InitialiseAsync(CreateTestPersona(agentId), Guid.NewGuid());
         await grain.SuppressAsync();
         
-        var suppressedResult = await grain.ProcessTickAsync(CreateTestTick());
+        var suppressedResult = await grain.ProcessTickAsync(CreateTestTick(), CancellationToken.None);
         Assert.Equal("silent", suppressedResult.EventType);
         
         await grain.ReactivateAsync();
-        var activeResult = await grain.ProcessTickAsync(CreateTestTick());
+        var activeResult = await grain.ProcessTickAsync(CreateTestTick(), CancellationToken.None);
 
         _fixture.MemoryStoreMock.Verify(m => m.SearchMemoryAsync(
             It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Once);

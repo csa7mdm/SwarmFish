@@ -65,7 +65,7 @@ public class AgentBatchCoordinator : Grain, IAgentBatchCoordinator
                 try
                 {
                     var grain = _grainFactory.GetGrain<IAgentGrain>(agentId);
-                    return await grain.ProcessTickAsync(tick);
+                    return await grain.ProcessTickAsync(tick, ct);
                 }
                 catch (Exception ex)
                 {
