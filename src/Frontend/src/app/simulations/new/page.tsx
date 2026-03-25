@@ -29,7 +29,12 @@ export default function NewSimulationPage() {
 
   const handleUploadComplete = async (fileInfo: UploadedFile) => {
     setSeedFile(fileInfo);
+<<<<<<< HEAD
     setSeedId(fileInfo.id);
+=======
+    // In a real app we'd get the ID from the upload response
+    setSeedId(`seed-${Date.now()}`);
+>>>>>>> origin/feat/agent-c
     // Auto-advance after a short delay
     setTimeout(() => setStep(2), 1500);
   };

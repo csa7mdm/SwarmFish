@@ -2,10 +2,15 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+<<<<<<< HEAD
 import * as signalR from '@microsoft/signalr';
 import { useSimulationStore } from '@/stores/simulation';
 import { api } from '@/lib/api';
 import { AgentEvent, SimulationProgress } from '@/types/api';
+=======
+import { useSimulationStore } from '@/stores/simulation';
+import { api } from '@/lib/api';
+>>>>>>> origin/feat/agent-c
 import { AgentEventFeed } from '@/components/AgentEventFeed';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
@@ -18,6 +23,7 @@ export default function LiveSimulationPage() {
   const router = useRouter();
   const simulationId = params.id as string;
   
+<<<<<<< HEAD
   const { 
     currentSimulation, 
     setCurrentSimulation, 
@@ -25,6 +31,9 @@ export default function LiveSimulationPage() {
     appendEvent, 
     reset 
   } = useSimulationStore();
+=======
+  const { currentSimulation, setCurrentSimulation, appendEvent, reset } = useSimulationStore();
+>>>>>>> origin/feat/agent-c
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
 
@@ -42,6 +51,7 @@ export default function LiveSimulationPage() {
       });
   }, [simulationId, setCurrentSimulation, reset]);
 
+<<<<<<< HEAD
   // SignalR Real-time stream
   useEffect(() => {
     const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001';
@@ -86,6 +96,47 @@ export default function LiveSimulationPage() {
       connection.stop();
     };
   }, [simulationId, handleProgress, appendEvent]);
+=======
+  // Mock SignalR Event stream
+  useEffect(() => {
+    if (!currentSimulation || currentSimulation.status !== 'Running') return;
+
+    const eventTypes = ['spoke', 'reacted', 'silent', 'moved'];
+    const mockPayloads = [
+      "I believe we should hold our position given the latest data.",
+      "Agreed, the downside risk is too high.",
+      "Observed movement in the secondary market.",
+      "Adjusting prior assumptions based on new peer consensus.",
+      "No change to my current thesis.",
+    ];
+
+    const interval = setInterval(() => {
+      // Create 1-3 random events
+      const numEvents = Math.floor(Math.random() * 3) + 1;
+      
+      for(let i=0; i<numEvents; i++) {
+        const type = eventTypes[Math.floor(Math.random() * eventTypes.length)];
+        appendEvent({
+          agentId: `ag-${Math.floor(Math.random() * 1000).toString().padStart(4, '0')}`,
+          eventType: type,
+          payload: mockPayloads[Math.floor(Math.random() * mockPayloads.length)],
+          timestamp: new Date().toISOString()
+        });
+      }
+      
+      // Occasionally update progress mock
+      if (Math.random() > 0.8) {
+        setCurrentSimulation({
+          ...currentSimulation,
+          currentRound: Math.min(currentSimulation.currentRound + 1, currentSimulation.totalRounds)
+        });
+      }
+      
+    }, 800);
+
+    return () => clearInterval(interval);
+  }, [currentSimulation, appendEvent, setCurrentSimulation]);
+>>>>>>> origin/feat/agent-c
 
   if (isLoading) return <div className="min-h-screen bg-slate-950 flex items-center justify-center text-slate-500">Connecting to Simulation Engine...</div>;
   if (isError || !currentSimulation) return <div className="min-h-screen bg-slate-950 flex items-center justify-center text-red-500">Failed to load simulation</div>;
