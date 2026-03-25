@@ -17,9 +17,12 @@ describe('SimulationCard', () => {
     const statuses = ['Initialising', 'Running', 'Paused', 'Completed', 'Failed'] as const;
     
     statuses.forEach(status => {
-      const { unmount } = render(
+      const { unmount, container } = render(
         <SimulationCard simulation={{ ...baseSimulation, status }} />
       );
+      
+      screen.debug(container);
+      console.log('Test HTML:', container.innerHTML);
       
       const badge = screen.getByText(status);
       expect(badge).toBeInTheDocument();
