@@ -1,0 +1,7 @@
+__pycache__/
+.venv/
+.uv/
+.env
+.env.local
+tests/
+out.txt
